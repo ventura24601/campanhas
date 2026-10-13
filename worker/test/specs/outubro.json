@@ -1,0 +1,50 @@
+{
+  "clinica": "Clínica Chiorato Odontologia",
+  "campanha": "Outubro Rosa",
+  "marca": {
+    "fundo": "#FFFFFF", "texto": "#1F1F1F", "texto_suave": "#1F1F1F", "destaque": "#EC6895",
+    "destaque_texto": "#FFFFFF", "fundo_claro": "#FBE3EB",
+    "fonte_titulo": "Urbanist", "fonte_texto": "Urbanist", "titulo_peso": 700, "motivo": "coracoes", "icone": "coracao"
+  },
+  "assets": {
+    "modelo": { "arquivo": "assets/woman.png" }, "amigas": { "arquivo": "assets/amigas.jpg" },
+    "rosa1": { "arquivo": "assets/rosa1.jpg" }, "rosa2": { "arquivo": "assets/rosa2.jpg" },
+    "presente": { "arquivo": "assets/presente.jpg" }, "cafe": { "arquivo": "assets/cafe.jpg" },
+    "tijuca": { "arquivo": "assets/tijuca.png" }, "coracao": { "arquivo": "assets/heart.png" }
+  },
+  "barra": {
+    "blocos": [
+      { "tipo": "texto", "titulo": "E participar é simples.", "texto": ["Agende sua avaliação e, ao [[fechar seu tratamento]]", "durante a campanha, você **participa**", "**automaticamente** do nosso [[sorteio]]."] },
+      { "tipo": "premio", "imagem": "cafe", "titulo": ["Concorra a um café da", "manhã + acompanhante."], "logo": "tijuca" },
+      { "tipo": "cta", "linha1": "Saiba mais", "linha2": "[[na recepção]]", "selo": "O sorteio será no dia 31/10." }
+    ]
+  },
+  "display": {
+    "kicker": "CAMPANHA", "titulo": ["Um tempo para", "[[cuidar de você.]]"],
+    "subtitulo": "Neste Outubro Rosa, cuide do seu sorriso e do seu bem-estar.",
+    "fotos": ["amigas"], "chamada": "Agende sua avaliação e, ao **fechar seu tratamento**, concorra!",
+    "pilula": "Café da manhã + acompanhante",
+    "beneficios": [["Mimo especial", "na avaliação"], ["Sorteio", "dia 31/10"]],
+    "cta": ["Saiba mais", "[[na recepção]]"], "selo": "O sorteio será no dia 31/10."
+  },
+  "video": {
+    "duracao": 42,
+    "cenas": [
+      { "tipo": "abertura", "kicker": "CAMPANHA", "titulo": ["Um tempo", "para [[cuidar]]", "[[de você.]]"], "tamanho_titulo": 150,
+        "selo": "Cuide de você com carinho.", "midia": { "tipo": "recorte", "imagem": "modelo" } },
+      { "tipo": "midia_texto", "lado": "esquerda", "midia": { "tipo": "foto", "imagem": "amigas", "icone": true, "largura": 800, "altura": 640 },
+        "titulo": ["[[Porque cuidar de]]", "[[você também é uma]]", "[[forma de se amar.]]"], "tamanho_titulo": 62,
+        "texto": ["Reserve um momento", "para cuidar do seu **sorriso**,", "da sua **autoestima** e", "do seu **bem-estar**."] },
+      { "tipo": "midia_texto", "lado": "direita", "icone_texto": true, "midia": { "tipo": "fotos2", "altas": true, "imagens": ["rosa1", "rosa2"] },
+        "titulo": ["[[E participar é simples.]]"], "tamanho_titulo": 66,
+        "texto": ["[[Agende sua avaliação]],", "venha até a clínica e,", "ao [[fechar seu tratamento]]", "durante a campanha, você", "**participa automaticamente**", "[[do nosso sorteio]]."] },
+      { "tipo": "midia_texto", "lado": "esquerda", "midia": { "tipo": "foto", "imagem": "presente", "icone": true, "largura": 740, "altura": 740 },
+        "titulo": ["Na sua avaliação,", "[[preparamos um mimo]]", "[[especial]] para você."], "tamanho_titulo": 62,
+        "texto": ["Um [[carinho]] para tornar", "esse momento ainda", "[[mais especial]]."] },
+      { "tipo": "midia_texto", "lado": "esquerda", "midia": { "tipo": "foto_circulo", "imagem": "cafe", "logo": "tijuca" }, "icone_texto": true,
+        "titulo": ["[[Concorra a um café da]]", "[[manhã + acompanhante.]]"], "tamanho_titulo": 66,
+        "texto": ["Um **momento especial**", "para **compartilhar** com", "quem [[você ama]]."] },
+      { "tipo": "cta", "titulo": ["Saiba mais", "[[na recepção]]"], "selo": "O sorteio será no dia 31/10.", "duracao": 5.5 }
+    ]
+  }
+}

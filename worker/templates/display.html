@@ -1,0 +1,76 @@
+<!doctype html><html><head><meta charset="utf-8">
+<script src="common.js"></script>
+<style>
+@page{size:148mm 210mm;margin:0}
+html,body{width:559px;height:794px}
+#pg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:34px 34px 30px;text-align:center}
+.blk{display:inline-block;width:max-content;text-align:center}
+.kick{font-weight:600;letter-spacing:.3em;color:var(--ac);font-size:11px}
+.photos{display:flex;gap:8px;justify-content:center}
+.photos div{overflow:hidden;border-radius:16px}
+.photos img{width:100%;height:100%;object-fit:cover;display:block}
+.ben{display:flex;align-items:center;gap:16px}
+.ben .v{width:1.5px;height:58px;background:var(--ac)}
+.foot{display:flex;align-items:center;justify-content:center;gap:22px}
+svg.bg{position:absolute;left:0;top:0}
+.deco{position:absolute;height:1.5px;background:var(--ac)}
+</style></head><body>
+<div id="pg"></div>
+<script>
+(function () {
+  const { S, M, rich, lines, arr, asset, hearts, fitAll, qa } = window.T;
+  T.injectBase();
+  const Dp = S.display || {};
+  const pg = document.getElementById('pg');
+  const W = 559, Hh = 794, inner = W - 68;
+  const blk = (txt, size, maxW, maxH, min, css, cls) => `<div class="blk ${cls || ''}" data-qa="texto" data-fit="${maxW},${maxH},${min}" style="font-size:${size}px;line-height:1.18;${css || ''}">${lines(txt)}</div>`;
+  const icon = asset(M.icone);
+  let h = '';
+  if (M.motivo === 'coracoes') document.body.insertAdjacentHTML('afterbegin', `<svg class="bg" width="${W}" height="${Hh}">${hearts(W / 2, 330, 11, 6, 1.7, 0.08, 0.35, 1)}</svg>`);
+  // topo
+  h += `<div style="display:flex;flex-direction:column;align-items:center;gap:6px">`;
+  if (Dp.kicker) h += blk(Dp.kicker, 11, inner, 0, 8, '', 'kick');
+  h += blk(Dp.titulo, Dp.tamanho_titulo || 54, inner, 150, 26, 'font-family:var(--ft);color:var(--tx);font-weight:var(--tw);line-height:1.02', 'ttl');
+  if (Dp.subtitulo) h += blk(Dp.subtitulo, 19, inner, 50, 11, 'color:var(--ac);font-weight:500');
+  h += `</div>`;
+  // fotos
+  const fotos = Dp.fotos || [];
+  if (fotos.length) {
+    const fh = Dp.altura_fotos || 210;
+    const ws = fotos.length === 1 ? [inner * 0.86] : [inner * 0.6, inner * 0.38];
+    h += `<div class="photos" style="height:${fh}px">${fotos.slice(0, 2).map((f, i) => `<div data-qa="midia" style="width:${ws[i]}px;height:${fh}px"><img src="${asset(f)}" style="object-position:${(Dp.posicoes || [])[i] || '50% 30%'}"></div>`).join('')}</div>`;
+  } else if (Dp.recorte) {
+    h += `<img data-qa="midia" src="${asset(Dp.recorte)}" style="height:${Dp.altura_fotos || 250}px">`;
+  }
+  if (Dp.chamada) h += blk(Dp.chamada, 21, inner, 60, 12);
+  if (Dp.pilula) {
+    const img = Dp.pilula_imagem ? `<img src="${asset(Dp.pilula_imagem)}" style="position:absolute;height:100px;right:-46px;top:50%;margin-top:-50px">` : '';
+    h += `<div style="position:relative;display:inline-block" data-qa="texto"><div class="blk" data-fit="${Dp.pilula_imagem ? inner - 40 : inner},0,14" style="font-size:30px"><span class="pill" style="font-size:inherit;padding:.33em ${Dp.pilula_imagem ? 2 : 1.07}em .37em 1.07em">${rich(Dp.pilula)}</span></div>${img}</div>`;
+  }
+  if (Dp.beneficios && Dp.beneficios.length) {
+    h += `<div class="ben">${Dp.beneficios.slice(0, 2).map((b, i) => (i ? '<div class="v"></div>' : '') + blk(b, 26, inner / 2 - 22, 70, 13, 'color:var(--tx);font-weight:700')).join('')}</div>`;
+  }
+  if (Dp.frase) h += blk(Dp.frase, 19, inner, 50, 11);
+  // rodapé
+  const cta = Dp.cta || ['SAIBA MAIS', 'NA RECEPÇÃO'];
+  const logo = Dp.logo ? `<img src="${asset(Dp.logo)}" style="max-height:62px;max-width:${inner * 0.42}px">` : '';
+  const sel = Dp.selo ? `<div style="display:inline-flex;align-items:center">${icon ? `<img src="${icon}" style="height:34px;margin-right:-4px;position:relative;z-index:2">` : ''}<span class="pill" style="font-size:13px;padding:5px 14px;${icon ? 'border-radius:0 6px 6px 0' : ''}">${rich(Dp.selo)}</span></div>` : '';
+  h += `<div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div class="foot">${blk(cta, 25, logo ? inner * 0.52 : inner, 70, 13, 'font-family:var(--ft);color:var(--tx);font-weight:var(--tw);line-height:1.08')}${logo}</div>${sel}</div>`;
+  pg.innerHTML = h;
+
+  async function init() {
+    await T.loadFonts();
+    fitAll(document);
+    // garante que o conjunto cabe na página: reduz fotos se estourar
+    let g = 0;
+    while (pg.scrollHeight > Hh + 1 && g++ < 40) {
+      const ph = pg.querySelector('.photos'); if (!ph) break;
+      const nh = ph.offsetHeight - 8; ph.style.height = nh + 'px'; ph.querySelectorAll('div').forEach((d) => (d.style.height = nh + 'px'));
+    }
+    if (pg.scrollHeight > Hh + 1) (window.__WARN = window.__WARN || []).push('conteúdo maior que a página A5');
+    window.__qa = () => qa('display', document.body, W, Hh);
+    window.__ready = true;
+  }
+  if (document.readyState === 'complete') init(); else window.addEventListener('load', init);
+})();
+</script></body></html>

@@ -1,0 +1,262 @@
+<!doctype html><html><head><meta charset="utf-8">
+<script src="common.js"></script>
+<style>
+html,body{width:1920px;height:1080px}
+.scene{position:absolute;inset:0;display:none;overflow:hidden}
+.a{position:absolute;will-change:transform,opacity}
+.col{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.blk{display:inline-block;width:max-content;text-align:center}
+.ln{will-change:transform,opacity}
+.photo{overflow:hidden;box-shadow:0 30px 60px -32px rgba(0,0,0,.35)}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.bar{background:var(--ac);position:absolute}
+svg.bg{position:absolute;inset:0;overflow:visible}
+.rings path{stroke-dasharray:1 1;stroke-dashoffset:1}
+.kick{font-weight:600;letter-spacing:.32em;color:var(--ac)}
+.h{color:var(--tx2);font-weight:400}
+.ch{display:inline-block;white-space:pre}
+#fade{position:absolute;inset:0;background:#000;opacity:0}
+</style></head><body>
+<div id="root"></div><div id="fade"></div>
+<script>
+(function () {
+  const { S, M, rich, lines, arr, asset, hearts, fitAll, qa } = window.T;
+  T.injectBase();
+  const V = Object.assign({ duracao: 40, cenas: [] }, S.video || {});
+  const W = 1920, H = 1080, D = V.duracao;
+  const motif = M.motivo || 'linhas';
+  const icon = asset(M.icone);
+  const root = document.getElementById('root');
+
+  // ---------- helpers de marcação ----------
+  const A = (anim, t, extra = '') => `data-anim="${anim}" data-t="${t.toFixed(2)}" ${extra}`;
+  function lineBlock(txt, { size, lh = 1.22, cls = 'h', maxW, maxH = 0, min = 26, t0, step = 0.16, title = false, css = '' }) {
+    const ls = arr(txt).filter((l) => l !== '');
+    const inner = ls.map((l, i) => `<span class="ln" ${title ? A('letters', t0 + i * 0.45) : A('rise', t0 + i * step)}>${rich(l)}</span>`).join('');
+    return `<div class="blk ${cls}" data-qa="texto" data-fit="${maxW},${maxH},${min}" style="font-size:${size}px;line-height:${lh};${css}">${inner}</div>`;
+  }
+  function pillHTML(text, size, t0, withIcon) {
+    const ic = withIcon && icon ? `<img src="${icon}" style="height:${size * 2.6}px;position:relative;z-index:2;margin-right:-${size * 0.35}px" ${A('pop', t0 + 0.1)}>` : '';
+    return `<div style="display:inline-flex;align-items:center" data-qa="texto">${ic}<span class="pill" ${A('pill', t0)} style="font-size:${size}px;padding:${size * 0.32}px ${size * 1.1}px ${size * 0.36}px;${ic ? 'border-radius:0 ' + size * 0.35 + 'px ' + size * 0.35 + 'px 0' : ''}">${rich(text)}</span></div>`;
+  }
+
+  // ---------- mídia ----------
+  function media(m, box, t0) {
+    if (!m) return '';
+    const tipo = m.tipo || 'foto';
+    const R = m.raio != null ? m.raio : 40;
+    const pos = m.posicao || '50% 35%';
+    let h = '';
+    const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
+    const photo = (id, x, y, w, hh, r, tt, p) => `<div class="a photo" data-qa="midia" ${A('photo', tt, `data-r="${r}"`)} style="left:${x}px;top:${y}px;width:${w}px;height:${hh}px;border-radius:${r}px"><img src="${asset(id)}" style="object-position:${p || pos}"></div>`;
+    if (motif === 'coracoes') h += `<svg class="bg" width="${W}" height="${H}" ${A('draw', t0 - 0.1)}>${hearts(cx, cy - box.h * 0.12, 12, Math.max(box.w, box.h) / 34, Math.max(box.w, box.h) / 300, 0.12, 0.85)}</svg>`;
+    if (tipo === 'foto') {
+      const w = Math.min(box.w, m.largura || box.w), hh = Math.min(box.h, m.altura || box.h);
+      h += photo(m.imagem, cx - w / 2, cy - hh / 2, w, hh, R, t0);
+      if (motif === 'linhas') h += `<div class="bar" ${A('bar-l', t0 + 0.8)} style="left:${cx + w / 2 - 260}px;top:${cy - hh / 2 - 46}px;width:260px;height:3px"></div>`;
+    } else if (tipo === 'fotos2') {
+      const ims = m.imagens || [];
+      const prop = m.proporcao || (m.altas ? [0.5, 0.5] : [0.63, 0.37]);
+      const gap = 20, hh = m.altas ? box.h : Math.min(box.h, box.w * 0.62);
+      const wA = (box.w - gap) * prop[0], wB = (box.w - gap) * prop[1];
+      const y = cy - hh / 2;
+      h += photo(ims[0], box.x, y, wA, hh, R, t0, (m.posicoes || [])[0]);
+      h += photo(ims[1], box.x + wA + gap, y, wB, hh, R, t0 + 0.3, (m.posicoes || [])[1]);
+      if (motif === 'linhas') {
+        h += `<div class="bar" ${A('bar-l', t0 + 0.8)} style="left:${box.x + box.w - 280}px;top:${y - 48}px;width:280px;height:3px"></div>`;
+        h += `<div class="bar" ${A('bar-l', t0 + 1.1)} style="left:${box.x + 20}px;top:${y + hh + 45}px;width:420px;height:3px"></div>`;
+      }
+    } else if (tipo === 'foto_circulo') {
+      const d = Math.min(box.w, box.h) * 0.94;
+      h += photo(m.imagem, cx - d / 2, cy - d / 2, d, d, d / 2, t0);
+      if (m.logo) h += `<div class="a" ${A('pop', t0 + 0.9)} style="left:${cx - d / 2}px;top:${cy + d / 2 - 130}px;background:#fff;padding:20px 30px"><img src="${asset(m.logo)}" style="height:80px;display:block"></div>`;
+    } else if (tipo === 'objeto') {
+      const d = Math.min(box.w, box.h);
+      h += `<div class="a" ${A('ring', t0 + 0.2)} style="left:${cx - d * 0.49}px;top:${cy - d * 0.49}px;width:${d * 0.98}px;height:${d * 0.98}px;border-radius:50%;border:3px solid var(--ac)"></div>`;
+      h += `<div class="a" ${A('disc', t0)} style="left:${cx - d * 0.38}px;top:${cy - d * 0.38}px;width:${d * 0.76}px;height:${d * 0.76}px;border-radius:50%;background:var(--light)"></div>`;
+      h += `<div class="a" ${A('fade', t0 + 0.8)} style="left:${cx - d * 0.27}px;top:${cy + d * 0.38}px;width:${d * 0.54}px;height:${d * 0.08}px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.25),rgba(0,0,0,0))"></div>`;
+      h += `<img class="a" data-qa="midia" ${A('object', t0 + 0.4)} src="${asset(m.imagem)}" style="left:${cx - d * 0.33}px;top:${cy - d * 0.33}px;width:${d * 0.66}px;height:${d * 0.66}px;object-fit:contain">`;
+    } else if (tipo === 'recorte') {
+      const hh = Math.min(H - box.y + 20, m.altura || 1000);
+      h += `<img class="a" data-qa="midia" ${A('cutout', t0)} src="${asset(m.imagem)}" style="left:${cx}px;top:${H - hh}px;height:${hh}px;transform-origin:50% 100%" data-center="1">`;
+    }
+    if (m.icone && icon) h += `<img class="a" ${A('pop', t0 + 0.7)} src="${icon}" style="width:190px;left:${box.x + box.w - 150}px;top:${box.y - 40}px">`;
+    return h;
+  }
+
+  // ---------- cenas ----------
+  const B = {};
+  B.abertura = (c) => {
+    const L = c.lado === 'direita' ? { tx: 1100, mx: 60 } : { tx: 60, mx: 900 };
+    let h = media(c.midia, { x: L.mx, y: 120, w: 940, h: 840 }, 0.7);
+    h += `<div class="col" style="left:${L.tx}px;top:100px;width:780px;height:880px;gap:26px">`;
+    if (c.kicker) h += `<div class="blk kick" data-qa="texto" data-fit="760,0,22" style="font-size:42px"><span class="ln" ${A('rise', 0.25)}>${rich(c.kicker)}</span></div>`;
+    h += `<div class="ttl">${lineBlock(c.titulo, { size: c.tamanho_titulo || 170, lh: 1.0, cls: 'ttl', maxW: 760, maxH: 560, min: 60, t0: 0.4, title: true })}</div>`;
+    if (c.subtitulo) h += lineBlock(c.subtitulo, { size: 50, lh: 1.25, maxW: 760, min: 28, t0: 1.5, css: 'color:var(--ac);font-weight:500' });
+    if (c.selo) h += pillHTML(c.selo, 40, 1.9, true);
+    return h + '</div>';
+  };
+  B.midia_texto = (c) => {
+    const left = (c.lado || 'esquerda') === 'esquerda';
+    const mb = left ? { x: 110, y: 110, w: 800, h: 860 } : { x: 1010, y: 110, w: 800, h: 860 };
+    let h = media(c.midia, mb, 0.1);
+    const tx = left ? 990 : 110;
+    h += `<div class="col" style="left:${tx}px;top:110px;width:820px;height:860px;gap:30px">`;
+    if (c.icone_texto && icon) h += `<img class="a" style="position:relative;width:200px" ${A('pop', 0.2)} src="${icon}">`;
+    if (motif === 'linhas' && !c.icone_texto) h += `<div style="position:relative;width:200px;height:3px"><div class="bar" ${A('bar-c', 0.5)} style="left:0;top:0;width:200px;height:3px"></div></div>`;
+    h += lineBlock(c.titulo, { size: c.tamanho_titulo || 80, lh: 1.24, maxW: 800, maxH: 560, min: 44, t0: 0.6 });
+    if (c.texto) h += lineBlock(c.texto, { size: 46, lh: 1.36, cls: 'h', maxW: 800, maxH: 320, min: 30, t0: 1.4, step: 0.14 });
+    return h + '</div>';
+  };
+  B.data = (c) => {
+    let h = '';
+    if (c.numero) h += `<div class="a c" ${A('num', 0.1)} style="left:0;top:40px;width:1920px;font-size:880px;line-height:880px;font-weight:700;color:var(--light)">${T.esc(c.numero)}</div>`;
+    if (motif === 'coracoes') h += `<svg class="bg" width="${W}" height="${H}" ${A('draw', 0)}>${hearts(960, 420, 14, 14, 3.6, 0.1, 0.7)}</svg>`;
+    h += `<div class="col" style="left:120px;top:120px;width:1680px;height:840px;gap:44px">`;
+    if (c.kicker) h += `<div class="blk kick" data-qa="texto" data-fit="1600,0,22" style="font-size:40px"><span class="ln" ${A('rise', 0.3)}>${rich(c.kicker)}</span></div>`;
+    const img = c.imagem ? `<img class="a" ${A('object', 1.3, 'data-amp="10"')} src="${asset(c.imagem)}" style="height:300px;right:-170px;top:50%;margin-top:-150px">` : '';
+    h += `<div style="position:relative;display:inline-block" data-qa="texto"><div class="blk" data-fit="${c.imagem ? 1420 : 1600},0,48" style="font-size:98px"><span class="pill" ${A('pill', 0.6)} style="font-size:inherit;padding:30px ${c.imagem ? 150 : 90}px 34px 90px">${rich(c.pilula || '')}</span></div>${img}</div>`;
+    if (c.texto) h += lineBlock(c.texto, { size: 50, lh: 1.3, maxW: 1500, min: 30, t0: 1.9 });
+    return h + '</div>';
+  };
+  B.beneficios = (c) => {
+    let h = media(c.midia, { x: 110, y: 110, w: 600, h: 860 }, 0.1);
+    h += `<div class="col" style="left:780px;top:110px;width:1060px;height:860px;gap:44px">`;
+    if (c.kicker) h += `<div class="blk kick" data-qa="texto" data-fit="1000,0,22" style="font-size:38px"><span class="ln" ${A('rise', 0.5)}>${rich(c.kicker)}</span></div>`;
+    const it = c.itens || [];
+    h += `<div style="display:flex;align-items:center;gap:36px">`;
+    it.slice(0, 2).forEach((txt, i) => {
+      if (i === 1) h += `<div style="position:relative;width:3px;height:170px"><div class="bar" ${A('bar-v', 1.1)} style="left:0;top:0;width:3px;height:170px"></div></div>`;
+      h += lineBlock(txt, { size: 68, lh: 1.22, maxW: 480, maxH: 260, min: 36, t0: 0.8 + i * 0.4, step: 0.15, css: 'color:var(--tx);font-weight:700' });
+    });
+    h += `</div>`;
+    if (c.texto) h += lineBlock(c.texto, { size: 46, lh: 1.36, maxW: 1000, maxH: 260, min: 28, t0: 2.0, step: 0.14 });
+    return h + '</div>';
+  };
+  B.cta = (c) => {
+    let h = '';
+    if (motif === 'coracoes') h += `<svg class="bg" width="${W}" height="${H}" ${A('draw', 0)}>${hearts(960, 300, 17, 6, 3.4, 0.08, 0.95)}</svg>`;
+    h += `<div class="col" style="left:120px;top:120px;width:1680px;height:840px;gap:40px">`;
+    if (motif === 'linhas') h += `<div style="position:relative;width:820px;height:3px"><div class="bar" ${A('bar-l', 0.2)} style="left:0;top:0;width:300px;height:3px"></div><div class="bar" ${A('bar-r', 0.2)} style="left:520px;top:0;width:300px;height:3px"></div></div>`;
+    h += `<div class="ttl">${lineBlock(c.titulo || ['Saiba mais', '[[na recepção]]'], { size: c.tamanho_titulo || 150, lh: 1.06, cls: 'ttl', maxW: 1600, maxH: 420, min: 60, t0: 0.3, title: true })}</div>`;
+    if (c.selo) h += pillHTML(c.selo, 42, 1.5, true);
+    if (c.logo) h += `<img class="a" style="position:relative;max-height:150px;max-width:420px" ${A('rise', 2.0)} src="${asset(c.logo)}">`;
+    return h + '</div>';
+  };
+  B.texto = (c) => {
+    let h = `<div class="col" style="left:160px;top:120px;width:1600px;height:840px;gap:36px">`;
+    if (c.kicker) h += `<div class="blk kick" data-qa="texto" data-fit="1500,0,22" style="font-size:40px"><span class="ln" ${A('rise', 0.3)}>${rich(c.kicker)}</span></div>`;
+    h += lineBlock(c.titulo, { size: c.tamanho_titulo || 96, lh: 1.2, maxW: 1500, maxH: 520, min: 48, t0: 0.5 });
+    if (c.texto) h += lineBlock(c.texto, { size: 50, lh: 1.35, maxW: 1400, maxH: 300, min: 30, t0: 1.3 });
+    return h + '</div>';
+  };
+
+  // ---------- montagem + tempos ----------
+  const cenas = V.cenas;
+  const fixed = cenas.reduce((s, c) => s + (c.duracao || 0), 0);
+  const free = cenas.filter((c) => !c.duracao).length;
+  const each = free ? (D - fixed) / free : 0;
+  let t = 0;
+  const scenes = cenas.map((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'scene';
+    const fn = B[c.tipo] || B.texto;
+    if (!B[c.tipo]) (window.__WARN = window.__WARN || []).push(`cena ${i + 1}: tipo "${c.tipo}" desconhecido, usei "texto"`);
+    el.innerHTML = fn(c);
+    root.appendChild(el);
+    const dur = c.duracao || each;
+    const sc = { el, a: t, b: t + dur, last: i === cenas.length - 1, tipo: c.tipo };
+    t += dur;
+    return sc;
+  });
+
+  // dividir letras dos títulos
+  function splitChars(ln) {
+    const walker = document.createTreeWalker(ln, NodeFilter.SHOW_TEXT);
+    const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((n) => {
+      const frag = document.createDocumentFragment();
+      for (const ch of n.textContent) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch; frag.appendChild(s); }
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+  async function init() {
+  await T.loadFonts();
+  scenes.forEach((s) => {
+    s.el.querySelectorAll('[data-anim="letters"]').forEach(splitChars);
+    s.el.style.display = 'block';
+    fitAll(s.el);
+    s.el.querySelectorAll('img[data-center]').forEach((im) => { im.style.left = (parseFloat(im.style.left) - im.offsetWidth / 2) + 'px'; });
+    s.items = [...s.el.querySelectorAll('[data-anim]')].map((el) => ({ el, k: el.dataset.anim, t0: +el.dataset.t, chars: el.dataset.anim === 'letters' ? [...el.querySelectorAll('.ch')] : null, paths: el.dataset.anim === 'draw' ? [...el.querySelectorAll('path')] : null }));
+    s.el.style.display = 'none';
+  });
+  window.__ready = true;
+  }
+  if (document.readyState === 'complete') init(); else window.addEventListener('load', init);
+
+  // ---------- motor de animação ----------
+  const cl = (x) => Math.max(0, Math.min(1, x));
+  const eo = (x) => 1 - Math.pow(1 - cl(x), 3);
+  const eio = (x) => { x = cl(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+  const eb = (x) => { x = cl(x); const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+  const ei = (x) => { x = cl(x); return x * x * x; };
+  function tf(el, x, y, s, r, o, extra) { el.style.transform = `translate(${x}px,${y}px) scale(${s}) rotate(${r || 0}deg)` + (extra || ''); el.style.opacity = o; }
+
+  function apply(it, L, out) {
+    const el = it.el, t0 = it.t0;
+    let q = 0; if (out !== null && L > out) q = ei((L - out) / 0.55);
+    const ex = -q * 240, ox = 1 - q;
+    switch (it.k) {
+      case 'rise': { const p = eo((L - t0) / 0.7); tf(el, ex, (1 - p) * 46, 1, 0, cl((L - t0) / 0.5) * ox); break; }
+      case 'fade': { el.style.opacity = cl((L - t0) / 0.6) * ox; el.style.transform = `translateX(${ex}px)`; break; }
+      case 'pop': { const p = eb((L - t0) / 0.6); const fl = Math.sin(Math.max(0, L - t0) * 2.2) * 6 * cl(L - t0 - 0.6); tf(el, ex, fl, 0.3 + 0.7 * p, 0, cl((L - t0) / 0.25) * ox); break; }
+      case 'photo': {
+        const p = eo((L - t0) / 1.1); const r = el.dataset.r;
+        el.style.clipPath = `inset(${(1 - p) * 50}% 0 0 0 round ${r}px)`;
+        tf(el, ex, (1 - p) * 60, 1, 0, cl((L - t0) / 0.45) * ox);
+        const im = el.firstElementChild; im.style.transform = `scale(${1.15 - 0.1 * eo((L - t0) / 1.5) - 0.04 * cl((L - t0 - 1.5) / 6)})`;
+        break;
+      }
+      case 'bar-l': case 'bar-r': case 'bar-c': {
+        el.style.transformOrigin = it.k === 'bar-l' ? 'left center' : it.k === 'bar-r' ? 'right center' : 'center';
+        el.style.transform = `translateX(${ex}px) scaleX(${eio((L - t0) / 0.9)})`; el.style.opacity = ox; break;
+      }
+      case 'bar-v': { el.style.transformOrigin = 'center top'; el.style.transform = `translateX(${ex}px) scaleY(${eio((L - t0) / 0.8)})`; el.style.opacity = ox; break; }
+      case 'pill': { const p = eio((L - t0) / 0.9); el.style.clipPath = `inset(0 ${100 - 100 * p}% 0 0 round 999px)`; el.style.transform = `translateX(${ex}px)`; el.style.opacity = ox; break; }
+      case 'letters': {
+        it.chars.forEach((c, i) => { const tt = t0 + i * 0.055; const p = eo((L - tt) / 0.7); c.style.opacity = cl((L - tt) / 0.45); c.style.transform = `translateY(${(1 - p) * 50}px)`; c.style.filter = p < 1 ? `blur(${(1 - p) * 8}px)` : 'none'; });
+        el.style.transform = `translateX(${ex}px)`; el.style.opacity = ox; break;
+      }
+      case 'num': { const p = eo((L - t0) / 1.6); tf(el, 0, 0, 1.15 - 0.15 * p, 0, cl((L - t0) / 0.8) * ox); break; }
+      case 'ring': { const p = eo((L - t0) / 1.4); tf(el, 0, 0, 0.85 + 0.15 * p, 0, 0.35 * cl((L - t0) / 0.6) * ox); break; }
+      case 'disc': { const p = eb((L - t0) / 1.0); tf(el, 0, 0, 0.6 + 0.4 * p, 0, cl((L - t0) / 0.4) * ox); break; }
+      case 'object': { const p = eb((L - t0) / 1.0); const amp = +(el.dataset.amp || 14); const fl = Math.sin(L * 1.7) * amp * cl(L - t0 - 1); tf(el, ex, (1 - p) * 140 + fl, 0.7 + 0.3 * p, Math.sin(L * 1.1) * 3, cl((L - t0) / 0.4) * ox); break; }
+      case 'cutout': { const p = eo((L - t0) / 1.2); tf(el, ex, (1 - p) * 80, 0.94 + 0.06 * p + 0.02 * cl((L - t0 - 1.2) / 5), 0, cl((L - t0) / 0.6) * ox); break; }
+      case 'draw': {
+        it.paths.forEach((pa, i) => { const p = eo((L - t0 - i * 0.07) / 1.2); pa.style.strokeDashoffset = 1 - p; pa.style.opacity = pa.dataset.op * ox; });
+        const g = el.querySelector('g'); const b = g.getAttribute('transform').split(' scale')[0]; g.setAttribute('transform', `${b} scale(${1 + 0.012 * Math.sin(L * 1.6)})`);
+        break;
+      }
+    }
+  }
+  const fade = document.getElementById('fade');
+  function render(tt) {
+    let cur = scenes[scenes.length - 1];
+    scenes.forEach((s) => { const on = tt >= s.a && (tt < s.b || s.last); s.el.style.display = on ? 'block' : 'none'; if (on) cur = s; });
+    const L = tt - cur.a, out = cur.last ? null : cur.b - cur.a - 0.6;
+    cur.items.forEach((it) => apply(it, L, out));
+    fade.style.opacity = 0.95 * cl((tt - (D - 1)) / 1);
+  }
+  window.render = render;
+  window.__duration = D;
+  window.__scenes = scenes.map((s) => ({ a: s.a, b: s.b, tipo: s.tipo }));
+  window.__qa = () => {
+    let w = [];
+    scenes.forEach((s, i) => {
+      render(s.a + Math.min(4, (s.b - s.a) * 0.6));
+      w = w.concat(qa(`vídeo cena ${i + 1} (${s.tipo})`, s.el, W, H));
+    });
+    return [...new Set(w)];
+  };
+})();
+</script></body></html>

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estúdio de Campanhas · IcomTV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDEFF2; --panel:#FFFFFF; --ink:#1D2129; --soft:#5B6270; --line:#D9DDE3;
+  --accent:#0E7C7B; --accent-soft:#E2F1F0; --warn:#B7791F; --warn-soft:#FBF1DE; --err:#B9412C; --err-soft:#F8E4E0; --ok:#2F7D3B; --ok-soft:#E3F2E5;
+  --bezel:#2A2D33;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.app{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
+aside{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;max-height:100vh;position:sticky;top:0}
+.brand{padding:22px 22px 14px}
+.brand h1{font-size:19px;font-weight:800;letter-spacing:-.01em}
+.brand p{color:var(--soft);font-size:13px}
+.new{margin:0 22px 14px;padding:12px 16px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+.new:hover{filter:brightness(1.07)}
+.list{overflow:auto;padding:0 12px 20px;flex:1}
+.item{display:block;width:100%;text-align:left;border:0;background:none;padding:12px 10px;border-radius:10px;cursor:pointer}
+.item:hover{background:var(--bg)}
+.item.sel{background:var(--accent-soft)}
+.item b{display:block;font-size:14px}
+.item span{font-size:12.5px;color:var(--soft)}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:99px;margin-top:4px}
+.st-na_fila,.st-processando{background:var(--warn-soft);color:var(--warn)}
+.st-revisao{background:var(--accent-soft);color:var(--accent)}
+.st-aprovado{background:var(--ok-soft);color:var(--ok)}
+.st-erro{background:var(--err-soft);color:var(--err)}
+main{padding:32px 40px 60px;max-width:1500px}
+h2{font-size:26px;font-weight:800;letter-spacing:-.015em}
+.sub{color:var(--soft);margin-top:2px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:22px}
+label{display:block;font-weight:600;font-size:13.5px;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff}
+textarea{min-height:84px;resize:vertical}
+.hint{font-size:12.5px;color:var(--soft);margin-top:4px}
+.drop{border:2px dashed #B8C0CB;border-radius:14px;padding:34px;text-align:center;cursor:pointer;background:#F7F8FA;transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop strong{display:block;font-size:17px}
+.files{margin-top:10px;font-size:13.5px;color:var(--soft)}
+.pecas{display:flex;gap:10px;flex-wrap:wrap}
+.pecas label{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:9px 14px;cursor:pointer;font-weight:500;margin:0}
+.pecas input{accent-color:var(--accent)}
+.row{display:flex;gap:12px;align-items:center;margin-top:20px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}
+.btn.sec{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.ok{background:var(--ok)}
+.btn:disabled{opacity:.5;cursor:default}
+.err{color:var(--err);font-weight:600}
+/* TV */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start;margin-top:22px}
+.tv{background:var(--bezel);border-radius:18px;padding:14px 14px 22px;box-shadow:0 30px 60px -35px rgba(20,24,32,.6)}
+.screen{position:relative;aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden}
+.screen .side{position:absolute;left:0;top:0;width:20%;height:80%;background:#3A3E46;display:flex;align-items:center;justify-content:center;color:#8B919C;font-size:12px;text-align:center;padding:8px}
+.screen .side img{width:100%;height:100%;object-fit:cover}
+.screen video{position:absolute;right:0;top:0;width:80%;height:80%;object-fit:cover;background:#111}
+.screen .full{width:100%;height:100%}
+.screen .bar{position:absolute;left:0;bottom:0;width:100%;height:20%;object-fit:cover;background:#2F333A}
+.tvfoot{height:8px;width:24%;margin:12px auto 0;border-radius:6px;background:#3B3F47}
+.display{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+.display img{width:100%;border-radius:4px;box-shadow:0 12px 28px -18px rgba(0,0,0,.5)}
+.display h4,.notes h4{font-size:14px;margin-bottom:10px}
+.dl{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.dl a{font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 11px;background:#fff}
+.dl a:hover{border-color:var(--accent)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.notes ul{padding-left:18px}
+.notes li{margin:4px 0}
+.alert li{color:var(--warn)}
+.progress{display:flex;gap:14px;align-items:center}
+.spin{width:22px;height:22px;border-radius:50%;border:3px solid var(--accent-soft);border-top-color:var(--accent);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.hist{font-size:13px;color:var(--soft);max-height:180px;overflow:auto;margin-top:12px}
+.hist div{padding:3px 0;border-bottom:1px dashed var(--line)}
+.empty{color:var(--soft);padding:60px 0;text-align:center}
+@media (max-width:1100px){.app{grid-template-columns:1fr}aside{position:static;max-height:none}.stage,.cols,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><h1>Estúdio de Campanhas</h1><p>IcomTV · barra, vídeo e display a partir de uma referência</p></div>
+    <button class="new" id="btnNew">Nova campanha</button>
+    <div class="list" id="list"></div>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<template id="tplNew">
+  <h2>Nova campanha</h2>
+  <p class="sub">Envie uma peça de referência. O agente identifica o que é e cria as peças que faltam.</p>
+  <form class="card" id="form">
+    <div class="drop" id="drop" tabindex="0">
+      <strong>Arraste o vídeo, a imagem ou o PDF aqui</strong>
+      <span class="hint">ou clique para escolher · MP4, PNG, JPG ou PDF · pode enviar mais de um arquivo da mesma campanha</span>
+      <input type="file" id="files" name="arquivos" multiple accept="video/*,image/*,application/pdf" hidden>
+      <div class="files" id="fileList"></div>
+    </div>
+    <div class="grid" style="margin-top:20px">
+      <div><label for="clinica">Clínica</label><input type="text" id="clinica" name="clinica" placeholder="Ex.: AKVO Odontologia"></div>
+      <div><label for="campanha">Campanha</label><input type="text" id="campanha" name="campanha" placeholder="Ex.: Implante Day"></div>
+      <div><label for="data">Data da campanha ou do sorteio</label><input type="text" id="data" name="data" placeholder="Ex.: 26 de setembro"><p class="hint">Deixe em branco para usar a data da referência.</p></div>
+      <div><label for="oferta">Oferta ou prêmio</label><input type="text" id="oferta" name="oferta" placeholder="Ex.: café da manhã + acompanhante"></div>
+    </div>
+    <div style="margin-top:16px"><label for="obs">Observações para o agente</label><textarea id="obs" name="observacoes" placeholder="Ex.: troque a data para 15/11 e use a foto do casal na abertura."></textarea></div>
+    <div style="margin-top:18px">
+      <label>O que gerar</label>
+      <div class="pecas">
+        <label><input type="radio" name="modo" value="auto" checked> Automático (as peças que faltam)</label>
+        <label><input type="checkbox" name="p" value="barra"> Barra em L</label>
+        <label><input type="checkbox" name="p" value="video"> Vídeo 40 s</label>
+        <label><input type="checkbox" name="p" value="display"> Display A5</label>
+      </div>
+      <label style="font-weight:500;margin-top:12px;display:flex;gap:8px;align-items:center"><input type="checkbox" name="usar_audio"> Usar a trilha do vídeo de referência no vídeo novo</label>
+    </div>
+    <div class="row"><button class="btn" type="submit" id="send">Gerar peças</button><span id="formErr" class="err"></span></div>
+  </form>
+</template>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const STATUS = { na_fila: 'Na fila', processando: 'Em produção', revisao: 'Para revisão', aprovado: 'Aprovado', erro: 'Erro' };
+const PECA = { barra: 'Barra', video: 'Vídeo', display: 'Display' };
+let atual = null, timer = null;
+
+async function api(url, opt) { const r = await fetch(url, opt); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.erro || r.statusText); return j; }
+
+async function carregarLista() {
+  const jobs = await api('/api/jobs');
+  $('#list').innerHTML = jobs.length ? jobs.map((j) => `
+    <button class="item ${j.id === atual ? 'sel' : ''}" data-id="${j.id}">
+      <b>${esc(j.campanha || 'Campanha sem nome')}</b>
+      <span>${esc(j.clinica || '—')} · ${new Date(j.criado_em).toLocaleDateString('pt-BR')}${j.pecas ? ' · ' + j.pecas.map((p) => PECA[p]).join(', ') : ''}</span><br>
+      <span class="chip st-${j.status}">${STATUS[j.status] || j.status}</span>
+    </button>`).join('') : '<p class="hint" style="padding:10px">Nenhuma campanha ainda.</p>';
+  document.querySelectorAll('.item').forEach((b) => b.onclick = () => abrir(b.dataset.id));
+}
+
+function telaNova() {
+  atual = null; clearTimeout(timer);
+  $('#main').innerHTML = ''; $('#main').append($('#tplNew').content.cloneNode(true));
+  const drop = $('#drop'), inp = $('#files');
+  const mostrar = () => $('#fileList').textContent = [...inp.files].map((f) => `${f.name} (${(f.size / 1048576).toFixed(1)} MB)`).join(' · ');
+  drop.onclick = () => inp.click();
+  drop.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } };
+  inp.onchange = mostrar;
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove('over'); inp.files = e.dataTransfer.files; mostrar(); };
+  document.querySelectorAll('input[name=p]').forEach((c) => c.onchange = () => { $('input[name=modo]').checked = ![...document.querySelectorAll('input[name=p]:checked')].length; });
+  $('input[name=modo]').onchange = () => document.querySelectorAll('input[name=p]').forEach((c) => c.checked = false);
+  $('#form').onsubmit = async (e) => {
+    e.preventDefault();
+    $('#formErr').textContent = '';
+    if (!inp.files.length) { $('#formErr').textContent = 'Envie ao menos um arquivo de referência.'; return; }
+    const fd = new FormData(e.target);
+    const sel = [...document.querySelectorAll('input[name=p]:checked')].map((c) => c.value);
+    fd.set('pecas', sel.length ? sel.join(',') : 'auto');
+    fd.set('usar_audio', $('input[name=usar_audio]').checked ? 'true' : 'false');
+    $('#send').disabled = true; $('#send').textContent = 'Enviando…';
+    try { const j = await api('/api/jobs', { method: 'POST', body: fd }); await carregarLista(); abrir(j.id); }
+    catch (err) { $('#formErr').textContent = err.message; $('#send').disabled = false; $('#send').textContent = 'Gerar peças'; }
+  };
+}
+
+const arq = (j, rel, baixar) => rel ? `/arquivos/${j.id}/${rel.split('/').map(encodeURIComponent).join('/')}${baixar ? '?baixar=1' : ''}` : '';
+
+function referenciaLateral(j) {
+  const img = (j.entradas || []).find((e) => /\.(png|jpe?g|webp)$/i.test(e.nome));
+  return img ? `<img src="${arq(j, img.arquivo.split('/jobs/' + j.id + '/')[1] || '')}" alt="">` : 'Lateral do L<br>(peça da clínica)';
+}
+
+async function abrir(id) {
+  atual = id; clearTimeout(timer);
+  let j;
+  try { j = await api('/api/jobs/' + id); } catch { return telaNova(); }
+  document.querySelectorAll('.item').forEach((b) => b.classList.toggle('sel', b.dataset.id === id));
+  const s = j.saidas || {};
+  const ocupado = j.status === 'na_fila' || j.status === 'processando';
+  let h = `<h2>${esc(j.briefing.campanha || 'Campanha')} <span class="chip st-${j.status}" style="vertical-align:middle">${STATUS[j.status]}</span></h2>
+    <p class="sub">${esc(j.briefing.clinica || '')}${j.versao ? ` · versão ${j.versao}` : ''}${j.notas?.referencia ? ' · ' + esc(j.notas.referencia) : ''}</p>`;
+  if (ocupado) {
+    h += `<div class="card progress"><div class="spin" aria-hidden="true"></div><div><b>${esc(j.etapa)}</b><p class="hint">O agente analisa a referência, recorta as imagens, confere as prévias e renderiza. Leva de 3 a 8 minutos.</p></div></div>`;
+  }
+  if (j.status === 'erro') h += `<div class="card"><p class="err">${esc(j.erro)}</p><div class="row"><button class="btn sec" id="retry">Tentar de novo</button></div></div>`;
+  if (s.video || s.barra || s.display_png) {
+    h += `<div class="stage"><div><div class="tv"><div class="screen">`;
+    if (s.video && s.barra) h += `<div class="side">${referenciaLateral(j)}</div><video src="${arq(j, s.video)}" autoplay muted loop playsinline controls></video><img class="bar" src="${arq(j, s.barra)}" alt="Barra em L">`;
+    else if (s.video) h += `<video class="full" style="width:100%;height:100%" src="${arq(j, s.video)}" autoplay muted loop playsinline controls></video>`;
+    else if (s.barra) h += `<div class="side">${referenciaLateral(j)}</div><div style="position:absolute;right:0;top:0;width:80%;height:80%;background:#23262C;display:flex;align-items:center;justify-content:center;color:#7D838E;font-size:13px">área de vídeo</div><img class="bar" src="${arq(j, s.barra)}" alt="Barra em L">`;
+    h += `</div><div class="tvfoot"></div></div>
+      <div class="dl">
+        ${s.video ? `<a href="${arq(j, s.video, 1)}">Baixar vídeo MP4</a>` : ''}
+        ${s.barra ? `<a href="${arq(j, s.barra, 1)}">Barra 1920×216</a><a href="${arq(j, s.barra_hd, 1)}">Barra HD 3840×432</a>` : ''}
+      </div></div>`;
+    h += s.display_png ? `<div class="display"><h4>Display A5</h4><img src="${arq(j, s.display_prev || s.display_png)}" alt="Display A5"><div class="dl" style="justify-content:center"><a href="${arq(j, s.display_pdf, 1)}">PDF para impressão</a><a href="${arq(j, s.display_png, 1)}">PNG 300 dpi</a></div></div>` : '<div></div>';
+    h += `</div>`;
+  }
+  if (j.notas) {
+    h += `<div class="cols">
+      <div class="card notes"><h4>Frases novas para aprovar</h4>${j.notas.frases_novas.length ? `<ul>${j.notas.frases_novas.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>` : '<p class="hint">Nenhuma: todos os textos vieram da referência.</p>'}</div>
+      <div class="card notes alert"><h4>Alertas</h4>${j.notas.alertas.length ? `<ul>${j.notas.alertas.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>` : '<p class="hint">Nenhum alerta.</p>'}</div>
+    </div>`;
+  }
+  if (j.status === 'revisao' || j.status === 'aprovado') {
+    h += `<div class="card"><label for="rev">Pedir ajuste</label><textarea id="rev" placeholder="Ex.: na barra, troque a foto do círculo pela do café; no vídeo, deixe a cena da data mais curta."></textarea>
+      <div class="row"><button class="btn sec" id="btnRev">Refazer com este ajuste</button>${j.status === 'revisao' ? '<button class="btn ok" id="btnOk">Aprovar</button>' : `<span class="chip st-aprovado">Aprovado${j.aprovado_por ? ' por ' + esc(j.aprovado_por) : ''}</span>`}<span id="revErr" class="err"></span></div></div>`;
+  }
+  h += `<div class="card"><h4 style="font-size:14px">Histórico</h4><div class="hist">${j.historico.slice().reverse().map((x) => `<div>${new Date(x.em).toLocaleString('pt-BR')} — ${esc(x.msg)}</div>`).join('')}</div>
+    ${j.uso?.input_tokens ? `<p class="hint" style="margin-top:8px">Uso da API: ${j.uso.input_tokens.toLocaleString('pt-BR')} tokens de entrada, ${j.uso.output_tokens.toLocaleString('pt-BR')} de saída (${esc(j.uso.modelo || '')})</p>` : ''}</div>`;
+  $('#main').innerHTML = h;
+  $('#btnRev') && ($('#btnRev').onclick = async () => {
+    const c = $('#rev').value.trim(); if (!c) { $('#revErr').textContent = 'Descreva o ajuste.'; return; }
+    try { await api(`/api/jobs/${id}/revisar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ comentario: c }) }); carregarLista(); abrir(id); } catch (e) { $('#revErr').textContent = e.message; }
+  });
+  $('#btnOk') && ($('#btnOk').onclick = async () => { await api(`/api/jobs/${id}/aprovar`, { method: 'POST' }); carregarLista(); abrir(id); });
+  $('#retry') && ($('#retry').onclick = async () => { await api(`/api/jobs/${id}/revisar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ comentario: 'Tentar novamente (houve erro na execução anterior).' }) }).catch((e) => alert(e.message)); abrir(id); });
+  if (ocupado) timer = setTimeout(() => { abrir(id); carregarLista(); }, 4000);
+}
+
+$('#btnNew').onclick = () => { document.querySelectorAll('.item').forEach((b) => b.classList.remove('sel')); telaNova(); };
+carregarLista().then(() => { const id = location.hash.slice(1); id ? abrir(id) : telaNova(); });
+window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (id) abrir(id); });
+</script>
+</body>
+</html>
