@@ -34,19 +34,34 @@ app.use(express.static(path.join(ROOT, 'public')));
 
 const tmp = path.join(DATA, 'tmp');
 fs.mkdirSync(tmp, { recursive: true });
-const upload = multer({ dest: tmp, limits: { fileSize: 500 * 1024 * 1024, files: 6 } });
+const upload = multer({ dest: tmp, limits: { fileSize: 500 * 1024 * 1024, files: 7 } });
 
 app.get('/api/jobs', (_req, res) => res.json(listarJobs()));
 app.get('/api/jobs/:id', (req, res) => { const j = lerJob(req.params.id); if (!j) return res.status(404).json({ erro: 'não encontrado' }); res.json(j); });
-app.post('/api/jobs', upload.array('arquivos', 6), (req, res) => {
-  if (!req.files?.length) return res.status(400).json({ erro: 'Envie ao menos um arquivo de referência (vídeo, imagem ou PDF).' });
+app.post('/api/jobs', upload.fields([{ name: 'arquivos', maxCount: 6 }, { name: 'logo', maxCount: 1 }]), (req, res) => {
+  const arquivos = req.files?.arquivos || [];
+  const logo = req.files?.logo?.[0] || null;
+  const descartar = () => [...arquivos, ...(logo ? [logo] : [])].forEach((f) => fs.rmSync(f.path, { force: true }));
   const b = req.body || {};
+  const modo = b.modo === 'adaptar' ? 'adaptar' : 'criar';
+  const hex = (v) => (/^#[0-9a-f]{6}$/i.test(String(v || '').trim()) ? String(v).trim().toUpperCase() : null);
+  const erro = !arquivos.length ? (modo === 'adaptar' ? 'Envie o material pronto que será adaptado.' : 'Envie ao menos um arquivo de referência (vídeo, imagem ou PDF).')
+    : modo === 'adaptar' && !logo ? 'Envie o logo da nova clínica.'
+    : modo === 'adaptar' && !(b.clinica || '').trim() ? 'Informe o nome da nova clínica.'
+    : null;
+  if (erro) { descartar(); return res.status(400).json({ erro }); }
   const briefing = {
+    modo,
     clinica: (b.clinica || '').trim(), campanha: (b.campanha || '').trim(), data: (b.data || '').trim(),
     oferta: (b.oferta || '').trim(), observacoes: (b.observacoes || '').trim(),
     pecas: (b.pecas || 'auto').trim(), usar_audio: b.usar_audio === 'true' || b.usar_audio === 'on',
   };
-  res.json(criarJob({ briefing, arquivos: req.files, autor: req.usuario }));
+  if (modo === 'adaptar') {
+    briefing.clinica_antiga = (b.clinica_antiga || '').trim();
+    const cores = { principal: hex(b.cor_principal), destaque: hex(b.cor_destaque), fundo: hex(b.cor_fundo) };
+    briefing.cores = b.cores === 'manual' && Object.values(cores).some(Boolean) ? { modo: 'manual', ...cores } : { modo: 'auto' };
+  }
+  res.json(criarJob({ briefing, arquivos, logo, autor: req.usuario }));
 });
 app.post('/api/jobs/:id/revisar', (req, res) => {
   const j = lerJob(req.params.id);

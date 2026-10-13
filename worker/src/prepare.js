@@ -1,7 +1,7 @@
 // Prepara as referências enviadas: gera folhas de contato, páginas, imagens embutidas, fontes e paletas.
 import fs from 'node:fs';
 import path from 'node:path';
-import { py } from './render.js';
+import { py, rasterizarSvg } from './render.js';
 
 const VIDEO = /\.(mp4|mov|m4v|webm|avi|mkv)$/i;
 const PDF = /\.pdf$/i;
@@ -78,4 +78,42 @@ export async function prepararReferencias(jobDir, entradas) {
     blocos.push({ tipo: 'texto', texto: `## Fontes extraídas do PDF (use em "fontes_extras" + "marca.fonte_titulo")\n${fontes.map((f) => `- família "${f.familia}" → arquivo "${f.arquivo}" — caracteres disponíveis: ${f.glifos ? JSON.stringify(f.glifos) : 'completo/desconhecido'}`).join('\n')}` });
   }
   return { sources, blocos, fontes, audio };
+}
+
+/**
+ * Logo da nova clínica (modo adaptar). Mantém o vetor quando possível:
+ *  SVG → assets/logo_cliente.svg · PDF → 1ª página convertida em SVG · imagem → assets/logo_cliente.png
+ * Registra a origem "logo_cliente" (para recorte/paleta) e devolve os blocos que o agente vê.
+ */
+export async function prepararLogo(jobDir, entrada, sources) {
+  const f = entrada.arquivo, ext = path.extname(f).toLowerCase();
+  const work = path.join(jobDir, 'ref', 'logo');
+  fs.mkdirSync(work, { recursive: true });
+  fs.mkdirSync(path.join(jobDir, 'assets'), { recursive: true });
+  let asset, png;
+  if (ext === '.svg') {
+    asset = 'assets/logo_cliente.svg';
+    fs.copyFileSync(f, path.join(jobDir, asset));
+    png = (await rasterizarSvg(path.join(jobDir, asset), path.join(work, 'logo.png'))).arquivo;
+  } else if (ext === '.pdf') {
+    const pg = (await py('pdf', { file: f, dir: work })).paginas[0];
+    asset = 'assets/logo_cliente.svg';
+    await py('pdf2svg', { pdf: f, out: path.join(jobDir, asset), w: pg.w, h: pg.h });
+    png = (await rasterizarSvg(path.join(jobDir, asset), path.join(work, 'logo.png'))).arquivo;
+  } else if (IMG.test(f)) {
+    asset = 'assets/logo_cliente.png';
+    png = (await py('image', { file: f, dir: work })).arquivo;
+    fs.copyFileSync(png, path.join(jobDir, asset));
+  } else {
+    throw new Error(`Formato de logo não suportado: ${entrada.nome}. Use SVG, PDF, PNG ou JPG.`);
+  }
+  const r = await py('image', { file: png, dir: path.join(work, 'origem') });
+  sources.logo_cliente = { tipo: 'imagem', arquivo: r.arquivo, preview: r.preview, scale: r.scale, w: r.w, h: r.h, pw: r.pw, ph: r.ph };
+  const pal = await py('palette', { src: r.arquivo });
+  const vetor = asset.endsWith('.svg');
+  return [
+    { tipo: 'texto', texto: `## LOGO DA NOVA CLÍNICA — "${entrada.nome}"${vetor ? ' (vetorial)' : ''}\nAsset pronto: "logo_cliente" → "${asset}". Coloque em spec.assets: "logo_cliente": {"arquivo":"${asset}"} e use em TODOS os lugares onde a referência tinha logo.${vetor ? ' É vetorial: não recorte, use como está.' : ' Se tiver fundo branco/sólido, gere uma versão transparente com `recortar` (id "logo_cliente", origem "logo_cliente", claro_transparente: true).'} Origem "logo_cliente" disponível para \`paleta\` (prévia ${r.pw}x${r.ph} px).` },
+    { tipo: 'imagem', arquivo: r.preview },
+    { tipo: 'texto', texto: `Paleta do logo: ${pal.cores.map((c) => `${c.hex} (${c.pct}%)`).join(', ')}` },
+  ];
 }

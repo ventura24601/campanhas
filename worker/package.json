@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env src/server.js",
     "render": "node src/cli.js render",
-    "test": "node test/agent-mock.test.js"
+    "test": "node test/agent-mock.test.js && node test/agent-adaptar.test.js"
   },
   "engines": {
     "node": ">=20"

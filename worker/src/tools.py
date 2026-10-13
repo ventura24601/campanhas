@@ -236,7 +236,35 @@ def sheet(a):
     return {"arquivo": out, "w": sh.width, "h": sh.height}
 
 
-CMDS = {"probe": probe, "video": video, "frame": frame, "pdf": pdf, "image": image, "crop": crop, "palette": palette, "sheet": sheet, "preview": lambda a: preview(a["src"], a["out"], a.get("max", PREVIEW_MAX))}
+def pdf2svg(a):
+    """1ª página de um PDF (vetorial, gerado pelo Chromium) → SVG com texto em curvas.
+    Coordenadas em px (w×h); "largura"/"altura" opcionais definem o tamanho físico (ex.: "148mm")."""
+    import re
+    import fitz
+    page = fitz.open(a["pdf"])[0]
+    w, h = a["w"], a["h"]
+    m = fitz.Matrix(w / page.rect.width, h / page.rect.height)
+    svg = page.get_svg_image(matrix=m, text_as_path=True)
+    larg, alt = a.get("largura", str(w)), a.get("altura", str(h))
+    svg = re.sub(r'(<svg\b[^>]*?)\swidth="[^"]*"\s+height="[^"]*"', lambda mm: f'{mm.group(1)} width="{larg}" height="{alt}"', svg, count=1)
+    with open(a["out"], "w", encoding="utf-8") as fh:
+        fh.write(svg)
+    return {"arquivo": a["out"], "bytes": os.path.getsize(a["out"])}
+
+
+def raster(a):
+    """SVG ou PDF (1ª página) → PNG com transparência, lado maior = max px."""
+    import fitz
+    doc = fitz.open(a["src"])
+    page = doc[0]
+    z = a.get("max", 1600) / max(page.rect.width, page.rect.height)
+    page.get_pixmap(matrix=fitz.Matrix(z, z), alpha=True).save(a["out"])
+    im = Image.open(a["out"])
+    return {"arquivo": a["out"], "w": im.width, "h": im.height}
+
+
+CMDS = {"probe": probe, "video": video, "frame": frame, "pdf": pdf, "image": image, "crop": crop, "palette": palette, "sheet": sheet,
+        "pdf2svg": pdf2svg, "raster": raster, "preview": lambda a: preview(a["src"], a["out"], a.get("max", PREVIEW_MAX))}
 
 if __name__ == "__main__":
     cmd = sys.argv[1]

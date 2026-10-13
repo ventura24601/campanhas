@@ -13,6 +13,7 @@
   --bezel:#2A2D33;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
 button,input,textarea,select{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
@@ -83,6 +84,57 @@ textarea{min-height:84px;resize:vertical}
 .hist{font-size:13px;color:var(--soft);max-height:180px;overflow:auto;margin-top:12px}
 .hist div{padding:3px 0;border-bottom:1px dashed var(--line)}
 .empty{color:var(--soft);padding:60px 0;text-align:center}
+/* nova campanha: modos */
+.modos{border:0;display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+.modo{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:18px 18px 18px 16px;cursor:pointer;margin:0;font-weight:400;transition:border-color .15s,box-shadow .15s}
+.modo:hover{border-color:#B8C0CB}
+.modo:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.modo:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
+.modo input{position:absolute;opacity:0;pointer-events:none}
+.modo .ic{flex:none;width:40px;height:40px;border-radius:10px;background:var(--bg);display:grid;place-items:center}
+.modo:has(input:checked) .ic{background:var(--accent);}
+.modo .ic svg{width:22px;height:22px;fill:none;stroke:var(--soft);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.modo:has(input:checked) .ic svg{stroke:#fff}
+.modo b{display:block;font-size:16px}
+.modo small{display:block;color:var(--soft);font-size:13.5px;margin-top:2px;line-height:1.45}
+.step{display:flex;align-items:center;gap:10px;font-size:16px;margin-bottom:16px}
+.step span{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-size:13px;display:grid;place-items:center}
+.step em{font-style:normal}
+.req,.opt{font-weight:500;font-size:11.5px;margin-left:6px;padding:1px 7px;border-radius:99px}
+.req{background:var(--warn-soft);color:var(--warn)}
+.opt{background:var(--bg);color:var(--soft)}
+.files{list-style:none;margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+.files li{font-size:13px;background:var(--bg);border-radius:8px;padding:5px 6px 5px 10px;display:flex;align-items:center;gap:6px}
+.files button{border:0;background:none;cursor:pointer;color:var(--soft);font-size:16px;line-height:1;padding:0 4px;border-radius:4px}
+.files button:hover{color:var(--err)}
+.marca{display:grid;grid-template-columns:260px 1fr;gap:22px;align-items:start}
+.drop.logo{padding:16px;height:160px;display:grid;place-items:center;background-color:#fff;background-image:linear-gradient(45deg,#F1F2F4 25%,transparent 25%,transparent 75%,#F1F2F4 75%),linear-gradient(45deg,#F1F2F4 25%,transparent 25%,transparent 75%,#F1F2F4 75%);background-size:16px 16px;background-position:0 0,8px 8px}
+.drop.logo img{max-width:100%;max-height:126px;object-fit:contain}
+.drop.logo strong{font-size:15px}
+.cores{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.seg{display:inline-flex;background:var(--bg);border-radius:10px;padding:3px;gap:3px}
+.seg label{margin:0;cursor:pointer;font-weight:600}
+.seg input{position:absolute;opacity:0}
+.seg span{display:block;padding:7px 14px;border-radius:8px;font-size:13.5px;color:var(--soft)}
+.seg input:checked+span{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg input:focus-visible+span{outline:3px solid var(--accent)}
+#detectadas{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sw{width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.12);display:inline-block}
+#pickers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 220px;gap:14px;margin-top:14px;align-items:center}
+.pick{display:flex;gap:10px;align-items:center}
+.pick input[type=color]{width:46px;height:46px;border:1px solid var(--line);border-radius:10px;padding:3px;background:#fff;cursor:pointer;flex:none}
+.pick label{margin:0;font-size:13px}
+.pick input[type=text]{padding:5px 8px;font-size:13px;font-family:ui-monospace,monospace;width:96px}
+.pick small{display:block;color:var(--soft);font-size:11.5px}
+.mini{border-radius:10px;padding:12px;text-align:center;border:1px solid var(--line);line-height:1.15}
+.mini b{display:block;font-size:15px;font-weight:500}
+.mini i{display:block;font-style:normal;font-weight:800;font-size:19px}
+.mini span{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:700;padding:3px 12px;border-radius:99px}
+.check{font-weight:500;margin-top:12px;display:flex;gap:8px;align-items:center}
+.modechip{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:99px;background:#EEE9F8;color:#5B3E9C;margin-left:4px}
+.dl a.main{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dl .outros{width:100%;font-size:12px;color:var(--soft);margin-top:2px}
+@media (max-width:1100px){.modos,.marca{grid-template-columns:1fr}#pickers{grid-template-columns:1fr}}
 @media (max-width:1100px){.app{grid-template-columns:1fr}aside{position:static;max-height:none}.stage,.cols,.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -98,32 +150,90 @@ textarea{min-height:84px;resize:vertical}
 
 <template id="tplNew">
   <h2>Nova campanha</h2>
-  <p class="sub">Envie uma peça de referência. O agente identifica o que é e cria as peças que faltam.</p>
-  <form class="card" id="form">
-    <div class="drop" id="drop" tabindex="0">
-      <strong>Arraste o vídeo, a imagem ou o PDF aqui</strong>
-      <span class="hint">ou clique para escolher · MP4, PNG, JPG ou PDF · pode enviar mais de um arquivo da mesma campanha</span>
-      <input type="file" id="files" name="arquivos" multiple accept="video/*,image/*,application/pdf" hidden>
-      <div class="files" id="fileList"></div>
-    </div>
-    <div class="grid" style="margin-top:20px">
-      <div><label for="clinica">Clínica</label><input type="text" id="clinica" name="clinica" placeholder="Ex.: AKVO Odontologia"></div>
-      <div><label for="campanha">Campanha</label><input type="text" id="campanha" name="campanha" placeholder="Ex.: Implante Day"></div>
-      <div><label for="data">Data da campanha ou do sorteio</label><input type="text" id="data" name="data" placeholder="Ex.: 26 de setembro"><p class="hint">Deixe em branco para usar a data da referência.</p></div>
-      <div><label for="oferta">Oferta ou prêmio</label><input type="text" id="oferta" name="oferta" placeholder="Ex.: café da manhã + acompanhante"></div>
-    </div>
-    <div style="margin-top:16px"><label for="obs">Observações para o agente</label><textarea id="obs" name="observacoes" placeholder="Ex.: troque a data para 15/11 e use a foto do casal na abertura."></textarea></div>
-    <div style="margin-top:18px">
+  <p class="sub">Escolha o que fazer com o material que você vai enviar.</p>
+  <form id="form" novalidate>
+    <fieldset class="modos" aria-label="O que fazer">
+      <label class="modo">
+        <input type="radio" name="modo" value="criar" checked>
+        <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+        <span><b>Criar as peças que faltam</b><small>Envie uma peça da campanha. O agente cria as outras (barra, vídeo, display) com a mesma identidade.</small></span>
+      </label>
+      <label class="modo">
+        <input type="radio" name="modo" value="adaptar">
+        <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h11l-3-3M20 17H9l3 3"/></svg></span>
+        <span><b>Adaptar para outra clínica</b><small>Envie um material pronto. O agente troca logo, cores e nome da clínica e mantém todo o resto.</small></span>
+      </label>
+    </fieldset>
+
+    <section class="card">
+      <h3 class="step"><span>1</span><em data-criar>Peça de referência</em><em data-adaptar hidden>Material pronto</em></h3>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-describedby="dropHint">
+        <strong data-criar>Arraste o vídeo, a imagem ou o PDF aqui</strong>
+        <strong data-adaptar hidden>Arraste as peças prontas aqui</strong>
+        <span class="hint" id="dropHint">ou clique para escolher · MP4, PNG, JPG ou PDF · pode enviar mais de um arquivo</span>
+        <input type="file" id="files" name="arquivos" multiple accept="video/*,image/*,application/pdf" hidden>
+      </div>
+      <ul class="files" id="fileList"></ul>
+    </section>
+
+    <section class="card" data-adaptar hidden>
+      <h3 class="step"><span>2</span><em>Nova marca</em></h3>
+      <div class="marca">
+        <div>
+          <label>Logo da nova clínica</label>
+          <div class="drop logo" id="dropLogo" tabindex="0" role="button" aria-describedby="logoHint">
+            <img id="logoPrev" alt="" hidden>
+            <div id="logoVazio"><strong>Arraste o logo aqui</strong><span class="hint" id="logoHint">SVG ou PDF (melhor: mantém o vetor) · PNG ou JPG</span></div>
+            <input type="file" id="logo" name="logo" accept=".svg,image/svg+xml,application/pdf,image/png,image/jpeg,image/webp" hidden>
+          </div>
+          <p class="hint" id="logoNome"></p>
+        </div>
+        <div>
+          <div><label for="clinicaNova">Nome da nova clínica <span class="req">obrigatório</span></label><input type="text" id="clinicaNova" placeholder="Ex.: Sorriso Pleno Odontologia" autocomplete="off"></div>
+          <div style="margin-top:14px"><label for="clinicaAntiga">Nome da clínica no material <span class="opt">opcional</span></label><input type="text" id="clinicaAntiga" name="clinica_antiga" placeholder="Ex.: AKVO Odontologia" autocomplete="off"><p class="hint">Ajuda o agente a achar todas as menções para trocar.</p></div>
+        </div>
+      </div>
+
+      <div class="cores">
+        <label>Cores</label>
+        <div class="seg" role="radiogroup" aria-label="Cores">
+          <label><input type="radio" name="cores" value="auto" checked><span>Extrair do logo</span></label>
+          <label><input type="radio" name="cores" value="manual"><span>Definir cores</span></label>
+        </div>
+        <div id="detectadas" class="hint" hidden></div>
+        <div id="pickers" hidden>
+          <div class="pick"><input type="color" id="corPrincipal" value="#1F2A44"><div><label for="corPrincipalHex">Principal</label><input type="text" id="corPrincipalHex" name="cor_principal" value="#1F2A44" maxlength="7" spellcheck="false"><small>títulos e negrito</small></div></div>
+          <div class="pick"><input type="color" id="corDestaque" value="#2E8B8A"><div><label for="corDestaqueHex">Destaque</label><input type="text" id="corDestaqueHex" name="cor_destaque" value="#2E8B8A" maxlength="7" spellcheck="false"><small>faixas, botões e linhas</small></div></div>
+          <div class="pick"><input type="color" id="corFundo" value="#F6F3EE"><div><label for="corFundoHex">Fundo</label><input type="text" id="corFundoHex" name="cor_fundo" value="#F6F3EE" maxlength="7" spellcheck="false"><small>cor de fundo das peças</small></div></div>
+          <div class="mini" id="mini" aria-hidden="true"><b>Saiba mais</b><i>na recepção</i><span>Dia 26</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-criar>
+      <h3 class="step"><span>2</span><em>Briefing</em></h3>
+      <div class="grid">
+        <div><label for="clinica">Clínica</label><input type="text" id="clinica" placeholder="Ex.: AKVO Odontologia"></div>
+        <div><label for="campanha">Campanha</label><input type="text" id="campanha" name="campanha" placeholder="Ex.: Implante Day"></div>
+        <div><label for="data">Data da campanha ou do sorteio</label><input type="text" id="data" name="data" placeholder="Ex.: 26 de setembro"><p class="hint">Deixe em branco para usar a data da referência.</p></div>
+        <div><label for="oferta">Oferta ou prêmio</label><input type="text" id="oferta" name="oferta" placeholder="Ex.: café da manhã + acompanhante"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="step"><span>3</span><em>Entrega</em></h3>
       <label>O que gerar</label>
       <div class="pecas">
-        <label><input type="radio" name="modo" value="auto" checked> Automático (as peças que faltam)</label>
+        <label><input type="radio" name="auto" checked> <span data-criar>Automático (as peças que faltam)</span><span data-adaptar hidden>As mesmas peças do material</span></label>
         <label><input type="checkbox" name="p" value="barra"> Barra em L</label>
         <label><input type="checkbox" name="p" value="video"> Vídeo 40 s</label>
         <label><input type="checkbox" name="p" value="display"> Display A5</label>
       </div>
-      <label style="font-weight:500;margin-top:12px;display:flex;gap:8px;align-items:center"><input type="checkbox" name="usar_audio"> Usar a trilha do vídeo de referência no vídeo novo</label>
-    </div>
-    <div class="row"><button class="btn" type="submit" id="send">Gerar peças</button><span id="formErr" class="err"></span></div>
+      <p class="hint">Barra e display saem em <b>SVG</b> (vetor, com texto em curvas), além de PNG e PDF para impressão. O vídeo sai em MP4.</p>
+      <label class="check" data-criar><input type="checkbox" name="usar_audio"> Usar a trilha do vídeo de referência no vídeo novo</label>
+      <div style="margin-top:16px"><label for="obs">Observações para o agente <span class="opt">opcional</span></label><textarea id="obs" name="observacoes" placeholder="Ex.: troque a data para 15/11 e use a foto do casal na abertura."></textarea></div>
+      <div class="row"><button class="btn" type="submit" id="send">Gerar peças</button><span id="formErr" class="err" role="alert"></span></div>
+    </section>
   </form>
 </template>
 
@@ -140,37 +250,156 @@ async function carregarLista() {
   const jobs = await api('/api/jobs');
   $('#list').innerHTML = jobs.length ? jobs.map((j) => `
     <button class="item ${j.id === atual ? 'sel' : ''}" data-id="${j.id}">
-      <b>${esc(j.campanha || 'Campanha sem nome')}</b>
+      <b>${esc(j.campanha || (j.modo === 'adaptar' ? 'Adaptação de material' : 'Campanha sem nome'))}</b>
       <span>${esc(j.clinica || '—')} · ${new Date(j.criado_em).toLocaleDateString('pt-BR')}${j.pecas ? ' · ' + j.pecas.map((p) => PECA[p]).join(', ') : ''}</span><br>
-      <span class="chip st-${j.status}">${STATUS[j.status] || j.status}</span>
+      <span class="chip st-${j.status}">${STATUS[j.status] || j.status}</span>${j.modo === 'adaptar' ? '<span class="modechip">Adaptação</span>' : ''}
     </button>`).join('') : '<p class="hint" style="padding:10px">Nenhuma campanha ainda.</p>';
   document.querySelectorAll('.item').forEach((b) => b.onclick = () => abrir(b.dataset.id));
+}
+
+const tamanho = (n) => n < 1048576 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / 1048576).toFixed(1)} MB`;
+// ---- cores: utilidades ----
+const toHex = (r, g, b) => '#' + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('').toUpperCase();
+const fromHex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const lum = ([r, g, b]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
+const sat = ([r, g, b]) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b); return mx ? (mx - mn) / mx : 0; };
+const mistura = (c, alvo, t) => c.map((v, i) => v + (alvo[i] - v) * t);
+// cores dominantes de uma imagem (ignora transparente e quase branco)
+function coresDoLogo(img) {
+  const cv = document.createElement('canvas'), k = 120 / Math.max(img.naturalWidth || 120, img.naturalHeight || 120);
+  cv.width = Math.max(1, Math.round((img.naturalWidth || 120) * k)); cv.height = Math.max(1, Math.round((img.naturalHeight || 120) * k));
+  const cx = cv.getContext('2d', { willReadFrequently: true }); cx.drawImage(img, 0, 0, cv.width, cv.height);
+  const d = cx.getImageData(0, 0, cv.width, cv.height).data, n = new Map();
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i + 3] < 128 || (d[i] > 232 && d[i + 1] > 232 && d[i + 2] > 232)) continue;
+    const key = (d[i] >> 4) << 8 | (d[i + 1] >> 4) << 4 | (d[i + 2] >> 4);
+    const e = n.get(key) || { c: 0, r: 0, g: 0, b: 0 }; e.c++; e.r += d[i]; e.g += d[i + 1]; e.b += d[i + 2]; n.set(key, e);
+  }
+  const cores = [];
+  for (const e of [...n.values()].sort((a, b) => b.c - a.c)) {
+    const c = [e.r / e.c, e.g / e.c, e.b / e.c];
+    if (cores.every((x) => Math.hypot(...x.map((v, i) => v - c[i])) > 48)) cores.push(c);
+    if (cores.length === 4) break;
+  }
+  return cores;
+}
+function sugerirPaleta(cores) {
+  if (!cores.length) return null;
+  const escura = [...cores].sort((a, b) => lum(a) - lum(b))[0];
+  const viva = [...cores].sort((a, b) => sat(b) - sat(a))[0];
+  const principal = lum(escura) < 110 ? escura : mistura(escura, [0, 0, 0], 0.45);
+  const destaque = sat(viva) > 0.25 && viva !== principal ? viva : (cores.find((c) => c !== escura) || mistura(escura, [255, 255, 255], 0.35));
+  return { principal: toHex(...principal), destaque: toHex(...destaque), fundo: toHex(...mistura(destaque, [255, 255, 255], 0.92)) };
 }
 
 function telaNova() {
   atual = null; clearTimeout(timer);
   $('#main').innerHTML = ''; $('#main').append($('#tplNew').content.cloneNode(true));
-  const drop = $('#drop'), inp = $('#files');
-  const mostrar = () => $('#fileList').textContent = [...inp.files].map((f) => `${f.name} (${(f.size / 1048576).toFixed(1)} MB)`).join(' · ');
-  drop.onclick = () => inp.click();
-  drop.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } };
-  inp.onchange = mostrar;
-  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over'); };
-  drop.ondragleave = () => drop.classList.remove('over');
-  drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove('over'); inp.files = e.dataTransfer.files; mostrar(); };
-  document.querySelectorAll('input[name=p]').forEach((c) => c.onchange = () => { $('input[name=modo]').checked = ![...document.querySelectorAll('input[name=p]:checked')].length; });
-  $('input[name=modo]').onchange = () => document.querySelectorAll('input[name=p]').forEach((c) => c.checked = false);
-  $('#form').onsubmit = async (e) => {
-    e.preventDefault();
+  const form = $('#form');
+  let arquivos = [], logo = null, sugestao = null, coresEditadas = false;
+  const modo = () => form.querySelector('input[name=modo]:checked').value;
+
+  // ---- modo ----
+  function aplicarModo() {
+    const m = modo();
+    form.querySelectorAll('[data-criar]').forEach((el) => (el.hidden = m !== 'criar'));
+    form.querySelectorAll('[data-adaptar]').forEach((el) => (el.hidden = m !== 'adaptar'));
+    $('#send').textContent = m === 'adaptar' ? 'Adaptar material' : 'Gerar peças';
+    $('#obs').placeholder = m === 'adaptar' ? 'Ex.: não use a foto do casal; troque "AKVO" também no selo do vídeo.' : 'Ex.: troque a data para 15/11 e use a foto do casal na abertura.';
     $('#formErr').textContent = '';
-    if (!inp.files.length) { $('#formErr').textContent = 'Envie ao menos um arquivo de referência.'; return; }
-    const fd = new FormData(e.target);
-    const sel = [...document.querySelectorAll('input[name=p]:checked')].map((c) => c.value);
+  }
+  form.querySelectorAll('input[name=modo]').forEach((r) => (r.onchange = aplicarModo));
+  aplicarModo();
+
+  // ---- arquivos de referência ----
+  const listar = () => {
+    $('#fileList').innerHTML = arquivos.map((f, i) => `<li>${esc(f.name)} <span class="hint" style="margin:0">${tamanho(f.size)}</span><button type="button" data-i="${i}" aria-label="Remover ${esc(f.name)}">×</button></li>`).join('');
+    $('#fileList').querySelectorAll('button').forEach((b) => (b.onclick = () => { arquivos.splice(+b.dataset.i, 1); listar(); }));
+  };
+  const soltar = (zona, input, aoReceber) => {
+    zona.onclick = () => input.click();
+    zona.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } };
+    zona.ondragover = (e) => { e.preventDefault(); zona.classList.add('over'); };
+    zona.ondragleave = () => zona.classList.remove('over');
+    zona.ondrop = (e) => { e.preventDefault(); zona.classList.remove('over'); aoReceber([...e.dataTransfer.files]); };
+    input.onchange = () => { aoReceber([...input.files]); input.value = ''; };
+  };
+  soltar($('#drop'), $('#files'), (fs) => { arquivos = [...arquivos, ...fs].slice(0, 6); listar(); });
+
+  // ---- logo ----
+  soltar($('#dropLogo'), $('#logo'), (fs) => {
+    const f = fs[0]; if (!f) return;
+    logo = f; sugestao = null;
+    $('#logoNome').textContent = `${f.name} · ${tamanho(f.size)}${/svg|pdf/i.test(f.type + f.name) ? ' · vetorial' : ''}`;
+    const img = $('#logoPrev');
+    if (/pdf/i.test(f.type) || /\.pdf$/i.test(f.name)) {
+      img.hidden = true; $('#logoVazio').hidden = false; $('#logoVazio').innerHTML = `<strong>PDF recebido</strong><span class="hint">As cores serão extraídas no servidor.</span>`;
+      mostrarDetectadas(); return;
+    }
+    img.onload = () => { sugestao = sugerirPaleta(coresDoLogo(img)); mostrarDetectadas(); if (!coresEditadas) aplicarSugestao(); };
+    img.src = URL.createObjectURL(f); img.hidden = false; $('#logoVazio').hidden = true;
+  });
+
+  // ---- cores ----
+  const campos = [['corPrincipal', 'principal'], ['corDestaque', 'destaque'], ['corFundo', 'fundo']];
+  function mini() {
+    const [p, d, f] = campos.map(([id]) => $('#' + id).value);
+    const m = $('#mini'); m.style.background = f; m.querySelector('b').style.color = p; m.querySelector('i').style.color = d;
+    const pill = m.querySelector('span'); pill.style.background = d; pill.style.color = lum(fromHex(d)) > 150 ? p : '#fff';
+  }
+  function aplicarSugestao() { if (!sugestao) return; campos.forEach(([id, k]) => { $('#' + id).value = sugestao[k]; $('#' + id + 'Hex').value = sugestao[k]; }); mini(); }
+  function mostrarDetectadas() {
+    const box = $('#detectadas');
+    if (!logo) { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = sugestao
+      ? `Cores detectadas no logo: ${['principal', 'destaque', 'fundo'].map((k) => `<span class="sw" title="${k} ${sugestao[k]}" style="background:${sugestao[k]}"></span>`).join('')}${form.querySelector('input[name=cores]:checked').value === 'manual' && coresEditadas ? ' <button type="button" class="btn sec" id="usarSug" style="padding:4px 10px;font-size:12.5px">Usar estas</button>' : ''}`
+      : 'As cores serão extraídas do logo pelo agente.';
+    $('#usarSug') && ($('#usarSug').onclick = () => { coresEditadas = false; aplicarSugestao(); mostrarDetectadas(); });
+  }
+  campos.forEach(([id]) => {
+    const c = $('#' + id), t = $('#' + id + 'Hex');
+    c.oninput = () => { t.value = c.value.toUpperCase(); coresEditadas = true; mini(); };
+    t.oninput = () => { const v = t.value.trim(); if (/^#[0-9a-f]{6}$/i.test(v)) { c.value = v; coresEditadas = true; mini(); } };
+    t.onblur = () => { if (!/^#[0-9a-f]{6}$/i.test(t.value.trim())) t.value = c.value.toUpperCase(); };
+  });
+  form.querySelectorAll('input[name=cores]').forEach((r) => (r.onchange = () => { $('#pickers').hidden = r.value !== 'manual' || !r.checked; if (r.checked && r.value === 'manual' && !coresEditadas) aplicarSugestao(); mostrarDetectadas(); }));
+  mini();
+
+  // ---- peças ----
+  const auto = form.querySelector('input[name=auto]'), caixas = [...form.querySelectorAll('input[name=p]')];
+  caixas.forEach((c) => (c.onchange = () => { auto.checked = !caixas.some((x) => x.checked); }));
+  auto.onclick = () => caixas.forEach((c) => (c.checked = false));
+
+  // ---- envio ----
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const m = modo(), err = (msg, foco) => { $('#formErr').textContent = msg; foco?.focus(); };
+    $('#formErr').textContent = '';
+    if (!arquivos.length) return err(m === 'adaptar' ? 'Envie o material pronto que será adaptado.' : 'Envie ao menos um arquivo de referência.', $('#drop'));
+    if (m === 'adaptar' && !logo) return err('Envie o logo da nova clínica.', $('#dropLogo'));
+    if (m === 'adaptar' && !$('#clinicaNova').value.trim()) return err('Informe o nome da nova clínica.', $('#clinicaNova'));
+    const fd = new FormData();
+    fd.set('modo', m);
+    arquivos.forEach((f) => fd.append('arquivos', f));
+    fd.set('clinica', (m === 'adaptar' ? $('#clinicaNova') : $('#clinica')).value.trim());
+    const sel = caixas.filter((c) => c.checked).map((c) => c.value);
     fd.set('pecas', sel.length ? sel.join(',') : 'auto');
-    fd.set('usar_audio', $('input[name=usar_audio]').checked ? 'true' : 'false');
-    $('#send').disabled = true; $('#send').textContent = 'Enviando…';
+    fd.set('observacoes', $('#obs').value);
+    if (m === 'adaptar') {
+      fd.append('logo', logo);
+      fd.set('clinica_antiga', $('#clinicaAntiga').value.trim());
+      const cm = form.querySelector('input[name=cores]:checked').value;
+      fd.set('cores', cm);
+      if (cm === 'manual') campos.forEach(([id]) => fd.set({ corPrincipal: 'cor_principal', corDestaque: 'cor_destaque', corFundo: 'cor_fundo' }[id], $('#' + id).value));
+    } else {
+      ['campanha', 'data', 'oferta'].forEach((k) => fd.set(k, $('#' + k).value));
+      fd.set('usar_audio', form.querySelector('input[name=usar_audio]').checked ? 'true' : 'false');
+    }
+    const btn = $('#send'), txt = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Enviando…';
     try { const j = await api('/api/jobs', { method: 'POST', body: fd }); await carregarLista(); abrir(j.id); }
-    catch (err) { $('#formErr').textContent = err.message; $('#send').disabled = false; $('#send').textContent = 'Gerar peças'; }
+    catch (er) { err(er.message); btn.disabled = false; btn.textContent = txt; }
   };
 }
 
@@ -188,10 +417,10 @@ async function abrir(id) {
   document.querySelectorAll('.item').forEach((b) => b.classList.toggle('sel', b.dataset.id === id));
   const s = j.saidas || {};
   const ocupado = j.status === 'na_fila' || j.status === 'processando';
-  let h = `<h2>${esc(j.briefing.campanha || 'Campanha')} <span class="chip st-${j.status}" style="vertical-align:middle">${STATUS[j.status]}</span></h2>
-    <p class="sub">${esc(j.briefing.clinica || '')}${j.versao ? ` · versão ${j.versao}` : ''}${j.notas?.referencia ? ' · ' + esc(j.notas.referencia) : ''}</p>`;
+  let h = `<h2>${esc(j.briefing.campanha || (j.briefing.modo === 'adaptar' ? 'Adaptação de material' : 'Campanha'))} <span class="chip st-${j.status}" style="vertical-align:middle">${STATUS[j.status]}</span></h2>
+    <p class="sub">${j.briefing.modo === 'adaptar' ? `<span class="modechip" style="margin:0 6px 0 0">Adaptação</span>${j.briefing.clinica_antiga ? esc(j.briefing.clinica_antiga) + ' → ' : 'nova marca: '}` : ''}${esc(j.briefing.clinica || '')}${j.versao ? ` · versão ${j.versao}` : ''}${j.notas?.referencia ? ' · ' + esc(j.notas.referencia) : ''}</p>`;
   if (ocupado) {
-    h += `<div class="card progress"><div class="spin" aria-hidden="true"></div><div><b>${esc(j.etapa)}</b><p class="hint">O agente analisa a referência, recorta as imagens, confere as prévias e renderiza. Leva de 3 a 8 minutos.</p></div></div>`;
+    h += `<div class="card progress"><div class="spin" aria-hidden="true"></div><div><b>${esc(j.etapa)}</b><p class="hint">${j.briefing.modo === 'adaptar' ? 'O agente reconstrói o material com o novo logo, as novas cores e o nome da clínica, confere as prévias e renderiza.' : 'O agente analisa a referência, recorta as imagens, confere as prévias e renderiza.'} Leva de 3 a 8 minutos. Mantenha esta aba aberta.</p></div></div>`;
   }
   if (j.status === 'erro') h += `<div class="card"><p class="err">${esc(j.erro)}</p><div class="row"><button class="btn sec" id="retry">Tentar de novo</button></div></div>`;
   if (s.video || s.barra || s.display_png) {
@@ -201,10 +430,11 @@ async function abrir(id) {
     else if (s.barra) h += `<div class="side">${referenciaLateral(j)}</div><div style="position:absolute;right:0;top:0;width:80%;height:80%;background:#23262C;display:flex;align-items:center;justify-content:center;color:#7D838E;font-size:13px">área de vídeo</div><img class="bar" src="${arq(j, s.barra)}" alt="Barra em L">`;
     h += `</div><div class="tvfoot"></div></div>
       <div class="dl">
-        ${s.video ? `<a href="${arq(j, s.video, 1)}">Baixar vídeo MP4</a>` : ''}
-        ${s.barra ? `<a href="${arq(j, s.barra, 1)}">Barra 1920×216</a><a href="${arq(j, s.barra_hd, 1)}">Barra HD 3840×432</a>` : ''}
+        ${s.video ? `<a class="main" href="${arq(j, s.video, 1)}">Vídeo MP4</a>` : ''}
+        ${s.barra_svg ? `<a class="main" href="${arq(j, s.barra_svg, 1)}">Barra SVG</a>` : ''}
+        ${s.barra ? `<span class="outros">Outros formatos da barra:</span><a href="${arq(j, s.barra, 1)}">PNG 1920×216</a>${s.barra_hd ? `<a href="${arq(j, s.barra_hd, 1)}">PNG HD 3840×432</a>` : ''}` : ''}
       </div></div>`;
-    h += s.display_png ? `<div class="display"><h4>Display A5</h4><img src="${arq(j, s.display_prev || s.display_png)}" alt="Display A5"><div class="dl" style="justify-content:center"><a href="${arq(j, s.display_pdf, 1)}">PDF para impressão</a><a href="${arq(j, s.display_png, 1)}">PNG 300 dpi</a></div></div>` : '<div></div>';
+    h += s.display_png ? `<div class="display"><h4>Display A5</h4><img src="${arq(j, s.display_prev || s.display_png)}" alt="Display A5"><div class="dl" style="justify-content:center">${s.display_svg ? `<a class="main" href="${arq(j, s.display_svg, 1)}">Display SVG</a><span class="outros">Outros formatos:</span>` : ''}<a href="${arq(j, s.display_pdf, 1)}">PDF para impressão</a><a href="${arq(j, s.display_png, 1)}">PNG 300 dpi</a></div></div>` : '<div></div>';
     h += `</div>`;
   }
   if (j.notas) {

@@ -4,9 +4,15 @@ Sistema interno onde a equipe envia **uma peça de referência** (vídeo, imagem
 
 | Peça | Saída |
 |---|---|
-| Barra em L | PNG 1920×216 + HD 3840×432 |
+| Barra em L | **SVG** 1920×216 (vetor, texto em curvas) + PNG 1920×216 e HD 3840×432 |
 | Vídeo | MP4 1920×1080, 25 fps, ~40 s (6 cenas animadas) |
-| Display de mesa | A5 vertical: PDF vetorial para impressão + PNG 300 dpi |
+| Display de mesa | **SVG** A5 (148×210 mm) + PDF vetorial para impressão + PNG 300 dpi |
+
+Dois modos na tela "Nova campanha":
+- **Criar as peças que faltam** — envia uma peça da campanha; o agente cria as outras.
+- **Adaptar para outra clínica** — envia um material pronto + o logo da nova clínica (SVG/PDF mantém o vetor; PNG/JPG também servem) + o nome; o agente entrega as mesmas peças trocando logo, cores (extraídas do logo ou definidas na tela) e nome da clínica.
+
+Os SVGs saem do PDF vetorial do Chromium convertido pelo PyMuPDF (`tools.py pdf2svg`): o texto vira curvas, então abrem iguais em qualquer programa, sem precisar das fontes.
 
 Fluxo: **Nova campanha → agente analisa, recorta imagens, gera prévias e se corrige → render final → revisão da equipe (aprovar ou "refazer com ajuste")**.
 

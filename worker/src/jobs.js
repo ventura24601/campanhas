@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { prepararReferencias } from './prepare.js';
+import { prepararReferencias, prepararLogo } from './prepare.js';
 import { rodarAgente, MODEL } from './agent.js';
 import { renderBar, renderDisplay, renderVideo, py } from './render.js';
 
@@ -24,10 +24,10 @@ function log(id, msg) { atualizar(id, (j) => { j.etapa = msg; j.historico.push({
 export function listarJobs() {
   return fs.readdirSync(JOBS).map(lerJob).filter(Boolean)
     .sort((a, b) => b.criado_em.localeCompare(a.criado_em))
-    .map(({ id, criado_em, status, etapa, briefing, pecas, notas, versao, autor }) => ({ id, criado_em, status, etapa, clinica: briefing.clinica, campanha: briefing.campanha, pecas, referencia: notas?.referencia, versao, autor }));
+    .map(({ id, criado_em, status, etapa, briefing, pecas, notas, versao, autor }) => ({ id, criado_em, status, etapa, modo: briefing.modo || 'criar', clinica: briefing.clinica, campanha: briefing.campanha, pecas, referencia: notas?.referencia, versao, autor }));
 }
 
-export function criarJob({ briefing, arquivos, autor }) {
+export function criarJob({ briefing, arquivos, logo = null, autor }) {
   const id = `${new Date().toISOString().slice(0, 10)}-${crypto.randomBytes(3).toString('hex')}`;
   const dir = jobDir(id);
   fs.mkdirSync(path.join(dir, 'entrada'), { recursive: true });
@@ -37,7 +37,13 @@ export function criarJob({ briefing, arquivos, autor }) {
     fs.renameSync(a.path, dst);
     return { nome: a.originalname, arquivo: dst };
   });
-  const job = { id, criado_em: new Date().toISOString(), autor: autor || null, status: 'na_fila', etapa: 'Na fila', briefing, entradas, pecas: null, spec: null, saidas: null, notas: null, versao: 0, revisoes: [], historico: [{ em: new Date().toISOString(), msg: 'Job criado' }], uso: { input_tokens: 0, output_tokens: 0 } };
+  let logoEntrada = null;
+  if (logo) {
+    const dst = path.join(dir, 'entrada', `logo_${logo.originalname.replace(/[^\w.\- ]+/g, '_')}`);
+    fs.renameSync(logo.path, dst);
+    logoEntrada = { nome: logo.originalname, arquivo: dst };
+  }
+  const job = { id, criado_em: new Date().toISOString(), autor: autor || null, status: 'na_fila', etapa: 'Na fila', briefing, entradas, logo: logoEntrada, pecas: null, spec: null, saidas: null, notas: null, versao: 0, revisoes: [], historico: [{ em: new Date().toISOString(), msg: 'Job criado' }], uso: { input_tokens: 0, output_tokens: 0 } };
   salvar(job);
   enfileirar(() => processar(id));
   return job;
@@ -60,8 +66,23 @@ export function retomarPendentes() {
 }
 
 function briefingTexto(b) {
+  if (b.modo === 'adaptar') {
+    const c = b.cores || { modo: 'auto' };
+    const cores = c.modo === 'manual'
+      ? [c.principal && `- Cor principal (títulos, **negrito**): ${c.principal} → marca.texto`, c.destaque && `- Cor de destaque (pílulas, linhas, [[destaque]]): ${c.destaque} → marca.destaque`, c.fundo && `- Cor de fundo: ${c.fundo} → marca.fundo`].filter(Boolean).join('\n') + '\nUse exatamente estes hex. Derive as cores que faltarem (texto_suave, fundo_claro, destaque_texto) em harmonia com elas e com bom contraste.'
+      : 'Automático: derive a paleta do LOGO DA NOVA CLÍNICA (use `paleta` na origem "logo_cliente"). Mantenha a mesma lógica de uso de cor da referência (onde era fundo claro continua fundo claro etc.) e garanta contraste legível.';
+    return [
+      `# BRIEFING — MODO ADAPTAR (trocar a marca de um material pronto)`,
+      `Nova clínica: ${b.clinica}`,
+      b.clinica_antiga ? `Clínica que aparece no material enviado (substituir): ${b.clinica_antiga}` : `Clínica que aparece no material enviado: identifique na referência e substitua.`,
+      b.campanha ? `Campanha: ${b.campanha}` : null,
+      `## Cores da nova marca\n${cores}`,
+      b.observacoes ? `Observações da equipe: ${b.observacoes}` : null,
+      `Peças pedidas: ${b.pecas && b.pecas !== 'auto' ? b.pecas : 'auto (as MESMAS peças do material enviado)'}`,
+    ].filter(Boolean).join('\n');
+  }
   const linhas = [
-    `# BRIEFING`,
+    `# BRIEFING — MODO CRIAR (gerar as peças que faltam)`,
     `Clínica: ${b.clinica || '(não informado — extraia da referência)'}`,
     `Campanha: ${b.campanha || '(não informado)'}`,
     b.data ? `Data da campanha/sorteio: ${b.data}` : null,
@@ -83,7 +104,8 @@ async function processar(id, comentario = null) {
     else {
       log(id, 'Analisando referências');
       const prep = await prepararReferencias(dir, job.entradas);
-      ctx = { ...prep, blocosIniciais: [{ tipo: 'texto', texto: briefingTexto(job.briefing) }, ...prep.blocos] };
+      const logoBlocos = job.logo ? await prepararLogo(dir, job.logo, prep.sources) : [];
+      ctx = { ...prep, blocosIniciais: [{ tipo: 'texto', texto: briefingTexto(job.briefing) }, ...prep.blocos, ...logoBlocos] };
       fs.writeFileSync(ctxFile, JSON.stringify(ctx, null, 1));
     }
     let blocos = ctx.blocosIniciais;
@@ -111,17 +133,18 @@ async function processar(id, comentario = null) {
     const nome = `${(r.spec.clinica || job.briefing.clinica || 'CLINICA')}_${(r.spec.campanha || job.briefing.campanha || 'CAMPANHA')}`.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-').toUpperCase();
     if (r.pecas.includes('barra')) {
       log(id, 'Renderizando a barra');
-      const b = await renderBar(r.spec, dir, out);
-      const f1 = path.join(out, `${nome}_BARRA_1920x216.png`), f2 = path.join(out, `${nome}_BARRA_3840x432.png`);
-      fs.renameSync(b.barra, f1); fs.renameSync(b.barra_hd, f2);
-      saidas.barra = path.relative(dir, f1); saidas.barra_hd = path.relative(dir, f2);
+      const b = await renderBar(r.spec, dir, out, { svg: true });
+      const fs_ = path.join(out, `${nome}_BARRA_1920x216.svg`), f1 = path.join(out, `${nome}_BARRA_1920x216.png`), f2 = path.join(out, `${nome}_BARRA_3840x432.png`);
+      fs.renameSync(b.barra_svg, fs_); fs.renameSync(b.barra, f1); fs.renameSync(b.barra_hd, f2);
+      saidas.barra_svg = path.relative(dir, fs_); saidas.barra = path.relative(dir, f1); saidas.barra_hd = path.relative(dir, f2);
       alertasRender.push(...b.qa);
     }
     if (r.pecas.includes('display')) {
       log(id, 'Renderizando o display A5');
-      const d = await renderDisplay(r.spec, dir, out);
-      const fp = path.join(out, `${nome}_DISPLAY_A5.pdf`), fg = path.join(out, `${nome}_DISPLAY_A5.png`);
-      fs.renameSync(d.display_pdf, fp); fs.renameSync(d.display_png, fg);
+      const d = await renderDisplay(r.spec, dir, out, { svg: true });
+      const fsv = path.join(out, `${nome}_DISPLAY_A5.svg`), fp = path.join(out, `${nome}_DISPLAY_A5.pdf`), fg = path.join(out, `${nome}_DISPLAY_A5.png`);
+      fs.renameSync(d.display_svg, fsv); fs.renameSync(d.display_pdf, fp); fs.renameSync(d.display_png, fg);
+      saidas.display_svg = path.relative(dir, fsv);
       const pv = await py('preview', { src: fg, out: path.join(out, 'display_prev.jpg'), max: 1100 });
       saidas.display_pdf = path.relative(dir, fp); saidas.display_png = path.relative(dir, fg); saidas.display_prev = path.relative(dir, pv.preview);
       alertasRender.push(...d.qa);

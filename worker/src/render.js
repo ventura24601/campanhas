@@ -57,14 +57,25 @@ async function open(kind, spec, jobDir, { scale = 1 } = {}) {
 
 async function qaOf(page) { return page.evaluate(() => (window.__qa ? window.__qa() : [])); }
 
-export async function renderBar(spec, jobDir, outDir, { hd = true } = {}) {
+// Página → PDF vetorial do Chromium → SVG (texto em curvas, fotos embutidas)
+async function toSvg(page, outSvg, w, h, fisico = {}) {
+  const tmpPdf = outSvg.replace(/\.svg$/, '.tmp.pdf');
+  await page.emulateMedia({ media: 'screen' });
+  await page.pdf({ path: tmpPdf, width: fisico.pdfW || `${w}px`, height: fisico.pdfH || `${h}px`, printBackground: true, pageRanges: '1' });
+  await py('pdf2svg', { pdf: tmpPdf, out: outSvg, w, h, ...(fisico.largura ? { largura: fisico.largura, altura: fisico.altura } : {}) });
+  fs.rmSync(tmpPdf, { force: true });
+  return outSvg;
+}
+
+export async function renderBar(spec, jobDir, outDir, { hd = true, svg = false } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
   const p1 = await open('bar', spec, jobDir);
   const qa = await qaOf(p1);
   const f1 = path.join(outDir, 'barra_1920x216.png');
   await p1.screenshot({ path: f1 });
-  await p1.close();
   const out = { barra: f1, qa };
+  if (svg) out.barra_svg = await toSvg(p1, path.join(outDir, 'barra_1920x216.svg'), 1920, 216);
+  await p1.close();
   if (hd) {
     const p2 = await open('bar', spec, jobDir, { scale: 2 });
     out.barra_hd = path.join(outDir, 'barra_3840x432.png');
@@ -74,7 +85,7 @@ export async function renderBar(spec, jobDir, outDir, { hd = true } = {}) {
   return out;
 }
 
-export async function renderDisplay(spec, jobDir, outDir, { pdf = true } = {}) {
+export async function renderDisplay(spec, jobDir, outDir, { pdf = true, svg = false } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
   const p = await open('display', spec, jobDir, { scale: 1748 / 559 });
   const qa = await qaOf(p);
@@ -85,6 +96,7 @@ export async function renderDisplay(spec, jobDir, outDir, { pdf = true } = {}) {
     out.display_pdf = path.join(outDir, 'display_A5.pdf');
     await p.pdf({ path: out.display_pdf, width: '148mm', height: '210mm', printBackground: true, preferCSSPageSize: true });
   }
+  if (svg) out.display_svg = await toSvg(p, path.join(outDir, 'display_A5.svg'), 559, 794, { pdfW: '148mm', pdfH: '210mm', largura: '148mm', altura: '210mm' });
   await p.close();
   return out;
 }
@@ -156,4 +168,26 @@ export async function renderPreview(spec, jobDir, outDir, kinds) {
     items.push({ tipo: 'display', arquivo: prev.preview });
   }
   return { items, qa: [...new Set(qa)] };
+}
+
+/** SVG → PNG transparente pelo Chromium (fiel a máscaras, gradientes e recortes), lado maior = max px. */
+export async function rasterizarSvg(svgFile, outPng, max = 1600) {
+  const b = await browser();
+  const p = await b.newPage({ viewport: { width: 400, height: 400 } });
+  await p.goto(pathToFileURL(svgFile).href);
+  const { w, h } = await p.evaluate(() => {
+    const s = document.documentElement, vb = s.viewBox && s.viewBox.baseVal;
+    const bb = s.getBoundingClientRect();
+    return { w: (vb && vb.width) || bb.width || 400, h: (vb && vb.height) || bb.height || 400 };
+  });
+  const z = max / Math.max(w, h);
+  const W = Math.round(w * z), H = Math.round(h * z);
+  await p.setViewportSize({ width: W, height: H });
+  const dataUrl = 'data:image/svg+xml;base64,' + fs.readFileSync(svgFile).toString('base64');
+  await p.goto('about:blank');
+  await p.setContent(`<html style="margin:0;background:transparent"><body style="margin:0"><img src="${dataUrl}" style="width:${W}px;height:${H}px;display:block"></body></html>`);
+  await p.waitForFunction(() => document.images[0]?.complete);
+  await p.screenshot({ path: outPng, omitBackground: true });
+  await p.close();
+  return { arquivo: outPng, w: W, h: H };
 }
