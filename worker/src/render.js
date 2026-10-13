@@ -10,6 +10,9 @@ import { fontManifest } from './fonts.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TPL = path.join(ROOT, 'templates');
 const pexec = promisify(execFile);
+// Python das ferramentas: PYTHON no .env, senão o .venv do projeto, senão python3 do sistema
+const VENV_PY = path.join(ROOT, '.venv', 'bin', 'python');
+const PYTHON = process.env.PYTHON || (fs.existsSync(VENV_PY) ? VENV_PY : 'python3');
 
 export function chromiumPath() {
   if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH;
@@ -127,7 +130,7 @@ export async function renderVideo(spec, jobDir, outFile, { fps = 25, audio = nul
 }
 
 export async function py(cmd, args) {
-  const { stdout } = await pexec('python3', [path.join(ROOT, 'src', 'tools.py'), cmd, JSON.stringify(args)], { maxBuffer: 50 * 1024 * 1024 });
+  const { stdout } = await pexec(PYTHON, [path.join(ROOT, 'src', 'tools.py'), cmd, JSON.stringify(args)], { maxBuffer: 50 * 1024 * 1024 });
   return JSON.parse(stdout);
 }
 
