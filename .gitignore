@@ -3,3 +3,4 @@ node_modules/
 .DS_Store
 worker/data/
 worker/test/.data/
+.claude/

@@ -1,6 +1,0 @@
-{
-  "version": "0.0.1",
-  "configurations": [
-    { "name": "estudio", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "worker", "start"], "port": 8080 }
-  ]
-}
