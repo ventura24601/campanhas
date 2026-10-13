@@ -1,0 +1,39 @@
+# Fly.io — Estúdio de Campanhas IcomTV
+# Deploy: fly deploy (dentro de worker/). Segredos: fly secrets set ANTHROPIC_API_KEY=... EQUIPE=usuario:senha
+app = "estudio-campanhas-icomtv"
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  CLAUDE_MODEL = "claude-opus-5-5"
+  DATA_DIR = "/data"
+  PORT = "8080"
+
+# jobs, referências e saídas ficam no volume (sobrevivem a reinícios e deploys)
+[mounts]
+  source = "dados"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # desliga quando ninguém está usando; liga sozinha no próximo acesso.
+  # A tela consulta o job a cada 4 s, então a máquina fica ligada enquanto a aba estiver aberta;
+  # se desligar no meio de um job, ele recomeça ao ligar (retomarPendentes).
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "30s"
+    timeout = "5s"
+    method = "GET"
+    path = "/saude"
+
+# fila em memória: mantenha 1 máquina só
+[[vm]]
+  size = "shared-cpu-2x"
+  memory = "4gb"
