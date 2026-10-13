@@ -20,7 +20,8 @@ Marcação de texto (em qualquer campo de texto):
     "fonte_texto": "Montserrat",
     "titulo_peso": 400,          // 400 para fontes display finas; 700 para sans
     "motivo": "linhas",          // "linhas" | "coracoes" | "nenhum"
-    "icone": "coracao"           // opcional: id de asset de ícone (ex.: coração no balão) usado em selos e mídias
+    "icone": "coracao",          // opcional: id de asset de ícone (ex.: coração no balão) usado em selos e mídias
+    "logo": "logo"               // id do asset do logo da CLÍNICA — aparece SOMENTE no display
   },
   "fontes_extras": [ { "familia": "SALVAGER", "arquivo": "fonts/SALVAGER.ttf" } ], // só fontes extraídas do PDF
   "assets": { "mulher": { "arquivo": "assets/mulher.png" } },  // preenchido com os recortes que você fez
@@ -28,7 +29,7 @@ Marcação de texto (em qualquer campo de texto):
   "barra": {
     "blocos": [
       { "tipo": "texto", "titulo": "E participar é simples.", "texto": ["linha 1", "linha 2", "linha 3"] },
-      { "tipo": "premio", "imagem": "cafe", "posicao": "50% 40%", "titulo": ["Concorra a um café da", "manhã + acompanhante."], "texto": "opcional", "logo": "tijuca" },
+      { "tipo": "premio", "imagem": "cafe", "posicao": "50% 40%", "titulo": ["Concorra a um café da", "manhã + acompanhante."], "texto": "opcional", "logo": "tijuca" }, // logo de PARCEIRO, nunca o da clínica
       { "tipo": "cta", "linha1": "Saiba mais", "linha2": "[[na recepção]]", "selo": "O sorteio será no dia 31/10." }
     ]
   },
@@ -43,7 +44,7 @@ Marcação de texto (em qualquer campo de texto):
     "pilula": "DIA 26 DE SETEMBRO", "pilula_imagem": "implante",  // imagem opcional na ponta da pílula
     "beneficios": [["Descontos", "exclusivos"], ["Condições de", "parcelamento"]],
     "frase": "frase de apoio",
-    "cta": ["SAIBA MAIS", "NA RECEPÇÃO"], "logo": "logo", "selo": "opcional"
+    "cta": ["SAIBA MAIS", "NA RECEPÇÃO"], "logo": "logo", "selo": "opcional"  // logo: opcional, padrão = marca.logo
   },
 
   "video": {
@@ -61,7 +62,7 @@ Marcação de texto (em qualquer campo de texto):
       { "tipo": "beneficios", "midia": { "tipo": "foto", "imagem": "b" }, "kicker": "SOMENTE NO IMPLANTE DAY",
         "itens": [["Descontos", "exclusivos"], ["Condições de", "parcelamento"]], "texto": ["…", "…"] },
       { "tipo": "texto", "kicker": "…", "titulo": ["…"], "texto": ["…"] },   // cena só de texto (coringa)
-      { "tipo": "cta", "titulo": ["SAIBA MAIS", "NA RECEPÇÃO"], "selo": "Implante Day · 26 de setembro", "logo": "logo", "duracao": 5.8 }
+      { "tipo": "cta", "titulo": ["SAIBA MAIS", "NA RECEPÇÃO"], "selo": "Implante Day · 26 de setembro", "duracao": 5.8 }
     ]
   }
 }
@@ -70,9 +71,11 @@ Marcação de texto (em qualquer campo de texto):
 Tipos de `midia`:
 - `foto` — retângulo arredondado (`raio`, `largura`, `altura`, `posicao`)
 - `fotos2` — duas fotos lado a lado (`imagens`, `posicoes`, `altas: true` para duas fotos verticais iguais, `proporcao: [0.63,0.37]`)
-- `foto_circulo` — foto em círculo (`logo` opcional no canto, ex. parceiro)
+- `foto_circulo` — foto em círculo (`logo` opcional no canto: só logo de parceiro)
 - `objeto` — imagem sem fundo flutuando sobre disco (ex.: implante, produto)
 - `recorte` — pessoa sem fundo, apoiada na base do quadro (só na `abertura` ou `midia_texto`)
 - `icone: true` em qualquer mídia → ícone da marca no canto superior direito
+
+**Logo da clínica**: só no display (`marca.logo` / `display.logo`). Na barra e no vídeo, o campo `logo` aceita apenas logos de parceiros; se apontar para o logo da clínica, o template remove e gera um alerta.
 
 Durações: cenas sem `duracao` dividem igualmente o restante de `video.duracao`. A última cena tem fade para preto no último segundo.

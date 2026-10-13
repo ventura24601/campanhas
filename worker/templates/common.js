@@ -23,6 +23,14 @@
     return BASE + a.arquivo;
   }
 
+  // O logo da CLÍNICA só aparece no display. Na barra e no vídeo, "logo" serve apenas para parceiros (ex.: patrocinador do prêmio).
+  function ehLogoClinica(id) { return !!id && (M.logo ? id === M.logo : /^logo(_cliente|_clinica)?$/i.test(id)); }
+  function logoParceiro(id) {
+    if (!ehLogoClinica(id)) return id;
+    (window.__WARN = window.__WARN || []).push(`o logo da clínica ("${id}") só pode ser usado no display — removido desta peça`);
+    return null;
+  }
+
   function injectBase() {
     const fonts = (window.__FONTS || []).map((f) => `@font-face{font-family:"${f.family}";src:url("${f.url}");font-weight:${f.weight};font-display:block}`).join('\n');
     const css = `${fonts}
@@ -102,5 +110,5 @@ b{color:var(--tx);font-weight:700}
   async function loadFonts() {
     try { await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); await document.fonts.ready; } catch (e) {}
   }
-  window.T = { S, M, esc, rich, lines, arr, asset, injectBase, hearts, fitAll, qa, loadFonts };
+  window.T = { S, M, esc, rich, lines, arr, asset, logoParceiro, injectBase, hearts, fitAll, qa, loadFonts };
 })();

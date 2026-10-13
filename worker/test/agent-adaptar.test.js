@@ -8,10 +8,10 @@ const { closeBrowser } = await import('../src/render.js');
 
 const spec = JSON.parse(fs.readFileSync('test/specs/implante.json', 'utf8'));
 spec.clinica = 'Sorriso Odontologia';
-spec.marca = { ...spec.marca, fundo: '#F1F7F6', texto: '#123B3A', destaque: '#0F6E6A', fundo_claro: '#DCEBE9' };
+spec.marca = { ...spec.marca, fundo: '#F1F7F6', texto: '#123B3A', destaque: '#0F6E6A', fundo_claro: '#DCEBE9', logo: 'logo_cliente' };
 spec.fontes_extras = [{ familia: 'SALVAGER', arquivo: 'fonts/SALVAGER.ttf' }];
 spec.assets = { mulher: { arquivo: 'assets/mulher.png' }, homem: { arquivo: 'assets/homem.png' }, implante: { arquivo: 'assets/implante.png' }, logo_cliente: { arquivo: 'assets/logo_cliente.svg' } };
-spec.display.logo = 'logo_cliente';
+delete spec.display.logo; // padrão = marca.logo
 const pecas = ['display'];
 
 let primeira = null;

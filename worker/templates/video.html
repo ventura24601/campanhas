@@ -20,7 +20,7 @@ svg.bg{position:absolute;inset:0;overflow:visible}
 <div id="root"></div><div id="fade"></div>
 <script>
 (function () {
-  const { S, M, rich, lines, arr, asset, hearts, fitAll, qa } = window.T;
+  const { S, M, rich, lines, arr, asset, hearts, fitAll, qa, logoParceiro } = window.T;
   T.injectBase();
   const V = Object.assign({ duracao: 40, cenas: [] }, S.video || {});
   const W = 1920, H = 1080, D = V.duracao;
@@ -69,7 +69,7 @@ svg.bg{position:absolute;inset:0;overflow:visible}
     } else if (tipo === 'foto_circulo') {
       const d = Math.min(box.w, box.h) * 0.94;
       h += photo(m.imagem, cx - d / 2, cy - d / 2, d, d, d / 2, t0);
-      if (m.logo) h += `<div class="a" ${A('pop', t0 + 0.9)} style="left:${cx - d / 2}px;top:${cy + d / 2 - 130}px;background:#fff;padding:20px 30px"><img src="${asset(m.logo)}" style="height:80px;display:block"></div>`;
+      if (logoParceiro(m.logo)) h += `<div class="a" ${A('pop', t0 + 0.9)} style="left:${cx - d / 2}px;top:${cy + d / 2 - 130}px;background:#fff;padding:20px 30px"><img src="${asset(m.logo)}" style="height:80px;display:block"></div>`;
     } else if (tipo === 'objeto') {
       const d = Math.min(box.w, box.h);
       h += `<div class="a" ${A('ring', t0 + 0.2)} style="left:${cx - d * 0.49}px;top:${cy - d * 0.49}px;width:${d * 0.98}px;height:${d * 0.98}px;border-radius:50%;border:3px solid var(--ac)"></div>`;
@@ -140,7 +140,7 @@ svg.bg{position:absolute;inset:0;overflow:visible}
     if (motif === 'linhas') h += `<div style="position:relative;width:820px;height:3px"><div class="bar" ${A('bar-l', 0.2)} style="left:0;top:0;width:300px;height:3px"></div><div class="bar" ${A('bar-r', 0.2)} style="left:520px;top:0;width:300px;height:3px"></div></div>`;
     h += `<div class="ttl">${lineBlock(c.titulo || ['Saiba mais', '[[na recepção]]'], { size: c.tamanho_titulo || 150, lh: 1.06, cls: 'ttl', maxW: 1600, maxH: 420, min: 60, t0: 0.3, title: true })}</div>`;
     if (c.selo) h += pillHTML(c.selo, 42, 1.5, true);
-    if (c.logo) h += `<img class="a" style="position:relative;max-height:150px;max-width:420px" ${A('rise', 2.0)} src="${asset(c.logo)}">`;
+    if (logoParceiro(c.logo)) h += `<img class="a" style="position:relative;max-height:150px;max-width:420px" ${A('rise', 2.0)} src="${asset(c.logo)}">`;
     return h + '</div>';
   };
   B.texto = (c) => {

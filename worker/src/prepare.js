@@ -112,7 +112,7 @@ export async function prepararLogo(jobDir, entrada, sources) {
   const pal = await py('palette', { src: r.arquivo });
   const vetor = asset.endsWith('.svg');
   return [
-    { tipo: 'texto', texto: `## LOGO DA NOVA CLÍNICA — "${entrada.nome}"${vetor ? ' (vetorial)' : ''}\nAsset pronto: "logo_cliente" → "${asset}". Coloque em spec.assets: "logo_cliente": {"arquivo":"${asset}"} e use em TODOS os lugares onde a referência tinha logo.${vetor ? ' É vetorial: não recorte, use como está.' : ' Se tiver fundo branco/sólido, gere uma versão transparente com `recortar` (id "logo_cliente", origem "logo_cliente", claro_transparente: true).'} Origem "logo_cliente" disponível para \`paleta\` (prévia ${r.pw}x${r.ph} px).` },
+    { tipo: 'texto', texto: `## LOGO DA NOVA CLÍNICA — "${entrada.nome}"${vetor ? ' (vetorial)' : ''}\nAsset pronto: "logo_cliente" → "${asset}". Coloque em spec.assets: "logo_cliente": {"arquivo":"${asset}"} e em "marca": "logo": "logo_cliente". O logo da clínica aparece SOMENTE no display; barra e vídeo ficam sem logo da clínica.${vetor ? ' É vetorial: não recorte, use como está.' : ' Se tiver fundo branco/sólido, gere uma versão transparente com `recortar` (id "logo_cliente", origem "logo_cliente", claro_transparente: true).'} Origem "logo_cliente" disponível para \`paleta\` (prévia ${r.pw}x${r.ph} px).` },
     { tipo: 'imagem', arquivo: r.preview },
     { tipo: 'texto', texto: `Paleta do logo: ${pal.cores.map((c) => `${c.hex} (${c.pct}%)`).join(', ')}` },
   ];

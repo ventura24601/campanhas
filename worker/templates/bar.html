@@ -15,7 +15,7 @@ svg.bg{position:absolute;left:0;top:0}
 <div id="row"></div>
 <script>
 (function () {
-  const { S, M, rich, lines, arr, asset, hearts, fitAll, qa } = window.T;
+  const { S, M, rich, lines, arr, asset, logoParceiro, hearts, fitAll, qa } = window.T;
   T.injectBase();
   const Bspec = S.barra || {};
   const blocos = Bspec.blocos || [];
@@ -29,12 +29,13 @@ svg.bg{position:absolute;left:0;top:0}
     if (i > 0) row.insertAdjacentHTML('beforeend', '<div class="sep"></div>');
     let h = '';
     const inner = w - 60;
+    const logo = logoParceiro(b.logo);
     if (b.tipo === 'texto') {
       h = `<div class="stack">${b.titulo ? blk(b.titulo, 36, inner, 50, 22, 'color:var(--ac);font-weight:800') : ''}${blk(b.texto, 25, inner, 112, 17)}</div>`;
     } else if (b.tipo === 'premio' || b.tipo === 'imagem_texto') {
       const img = b.imagem ? `<div class="circ" data-qa="midia"><img src="${asset(b.imagem)}" style="object-position:${b.posicao || '50% 50%'}"></div>` : '';
       const tw = inner - (img ? 200 : 0);
-      h = `${img}<div class="stack">${blk(b.titulo, 36, tw, 92, 20, 'color:var(--ac);font-weight:800')}${b.texto ? blk(b.texto, 23, tw, 60, 16) : ''}${b.logo ? `<img src="${asset(b.logo)}" style="max-height:${b.texto ? 40 : 56}px;max-width:${tw}px;margin-top:6px">` : ''}</div>`;
+      h = `${img}<div class="stack">${blk(b.titulo, 36, tw, 92, 20, 'color:var(--ac);font-weight:800')}${b.texto ? blk(b.texto, 23, tw, 60, 16) : ''}${logo ? `<img src="${asset(logo)}" style="max-height:${b.texto ? 40 : 56}px;max-width:${tw}px;margin-top:6px">` : ''}</div>`;
     } else if (b.tipo === 'cta') {
       const bg = (M.motivo === 'coracoes') ? `<svg class="bg" width="${w}" height="216">${hearts(w / 2, 96, 9, 12.5, 3.6, 0.15, 0.55)}</svg>` : '';
       const sel = b.selo ? `<div style="display:inline-flex;align-items:center;margin-top:8px">${icon ? `<img src="${icon}" style="height:48px;margin-right:-6px;position:relative;z-index:2">` : ''}<span class="pill" style="font-size:22px;padding:7px 22px 8px;${icon ? 'border-radius:0 8px 8px 0' : ''}">${rich(b.selo)}</span></div>` : '';

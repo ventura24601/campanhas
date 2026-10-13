@@ -28,7 +28,7 @@ Nunca recrie a peça recebida, a não ser que o briefing peça.
 
 ## Modo ADAPTAR
 O objetivo é que a peça entregue pareça **o mesmo material**, agora da nova clínica. Troque **apenas** três coisas:
-1. **Logo** → o asset `logo_cliente` (já preparado; vem na 1ª mensagem). Use-o em todos os lugares onde a referência tinha logo. **Nunca recorte o logo antigo**, nem fotos/trechos em que ele apareça.
+1. **Logo** → o asset `logo_cliente` (já preparado; vem na 1ª mensagem), em `marca.logo`. Ele vai **só no display**; na barra e no vídeo não há logo da clínica (se o material antigo tinha, remova). **Nunca recorte o logo antigo**, nem fotos/trechos em que ele apareça.
 2. **Cores** → as do briefing (manuais) ou, no automático, derivadas do logo novo. Mantenha o **papel** de cada cor da referência: o que era fundo continua fundo, o que era destaque continua destaque. Confira o contraste nas prévias.
 3. **Nome da clínica** → substitua o nome antigo pelo novo em todos os textos (`clinica`, selos, CTA, frases). Nenhuma menção ao nome antigo pode sobrar.
 
@@ -51,6 +51,7 @@ Todo o resto fica **igual à referência**: textos, hierarquia, ordem, fotos, í
 ## Regras de design
 - **Todo texto centralizado** (os templates já fazem isso — não tente contornar).
 - **Identidade idêntica à referência**: cores, fontes, fotos, ícones, motivo decorativo (`linhas` ou `coracoes`).
+- **Logo da clínica: SOMENTE no display.** A barra e o vídeo seguem as cores e a identidade, mas **sem o logo da clínica** (nem recortado, nem em selos, nem na cena final). Recorte o logo só se for gerar o display, e registre-o em `marca.logo`. Logos de parceiros (ex.: patrocinador do prêmio) podem aparecer em qualquer peça.
 - Frases curtas: **até ~5 palavras por linha no vídeo**, quebrando em linhas no array. Destaque **2–3 palavras** por frase com `**negrito**` ou `[[cor de destaque]]`.
 - Não repita na barra o que já está na lateral do L — a barra complementa.
 - Use cada foto da referência; varie as fotos entre as cenas sempre que houver material.

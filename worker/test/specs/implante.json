@@ -4,7 +4,7 @@
   "marca": {
     "fundo": "#F3EDE7", "texto": "#141B32", "texto_suave": "#3B3F4A", "destaque": "#809AC6",
     "destaque_texto": "#FFFFFF", "fundo_claro": "#E7DED4",
-    "fonte_titulo": "SALVAGER", "fonte_texto": "Montserrat", "titulo_peso": 400, "motivo": "linhas"
+    "fonte_titulo": "SALVAGER", "fonte_texto": "Montserrat", "titulo_peso": 400, "motivo": "linhas", "logo": "logo"
   },
   "fontes_extras": [{ "familia": "SALVAGER", "arquivo": "fonts/SALVAGER.ttf" }],
   "assets": {
@@ -14,7 +14,7 @@
   "barra": {
     "blocos": [
       { "tipo": "texto", "titulo": "Seu novo sorriso começa aqui.", "texto": ["Volte a **sorrir**, **mastigar** e **viver**", "com liberdade, com **descontos exclusivos**", "e **condições de parcelamento**."] },
-      { "tipo": "premio", "imagem": "mulher", "posicao": "45% 30%", "titulo": ["Implante Day", "26 de setembro"], "logo": "logo" },
+      { "tipo": "premio", "imagem": "mulher", "posicao": "45% 30%", "titulo": ["Implante Day", "26 de setembro"] },
       { "tipo": "cta", "linha1": "Saiba mais", "linha2": "[[na recepção]]", "selo": "Dia 26 de setembro" }
     ]
   },
@@ -40,7 +40,7 @@
         "texto": "Seu **novo sorriso** pode **começar agora**!" },
       { "tipo": "beneficios", "midia": { "tipo": "foto", "imagem": "homem", "posicao": "50% 30%" }, "kicker": "SOMENTE NO IMPLANTE DAY",
         "itens": [["Descontos", "exclusivos"], ["Condições de", "parcelamento"]], "texto": ["Condições pensadas para você", "dar o primeiro passo."] },
-      { "tipo": "cta", "titulo": ["SAIBA MAIS", "NA RECEPÇÃO"], "selo": "Implante Day · 26 de setembro", "logo": "logo", "duracao": 5.8 }
+      { "tipo": "cta", "titulo": ["SAIBA MAIS", "NA RECEPÇÃO"], "selo": "Implante Day · 26 de setembro", "duracao": 5.8 }
     ]
   }
 }

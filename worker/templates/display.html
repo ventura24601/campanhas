@@ -53,7 +53,8 @@ svg.bg{position:absolute;left:0;top:0}
   if (Dp.frase) h += blk(Dp.frase, 19, inner, 50, 11);
   // rodapé
   const cta = Dp.cta || ['SAIBA MAIS', 'NA RECEPÇÃO'];
-  const logo = Dp.logo ? `<img src="${asset(Dp.logo)}" style="max-height:62px;max-width:${inner * 0.42}px">` : '';
+  const logoId = Dp.logo || M.logo;
+  const logo = logoId ? `<img src="${asset(logoId)}" style="max-height:62px;max-width:${inner * 0.42}px">` : '';
   const sel = Dp.selo ? `<div style="display:inline-flex;align-items:center">${icon ? `<img src="${icon}" style="height:34px;margin-right:-4px;position:relative;z-index:2">` : ''}<span class="pill" style="font-size:13px;padding:5px 14px;${icon ? 'border-radius:0 6px 6px 0' : ''}">${rich(Dp.selo)}</span></div>` : '';
   h += `<div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div class="foot">${blk(cta, 25, logo ? inner * 0.52 : inner, 70, 13, 'font-family:var(--ft);color:var(--tx);font-weight:var(--tw);line-height:1.08')}${logo}</div>${sel}</div>`;
   pg.innerHTML = h;

@@ -12,6 +12,8 @@ Dois modos na tela "Nova campanha":
 - **Criar as peças que faltam** — envia uma peça da campanha; o agente cria as outras.
 - **Adaptar para outra clínica** — envia um material pronto + o logo da nova clínica (SVG/PDF mantém o vetor; PNG/JPG também servem) + o nome; o agente entrega as mesmas peças trocando logo, cores (extraídas do logo ou definidas na tela) e nome da clínica.
 
+Regra de marca: **o logo da clínica aparece só no display**. Barra e vídeo seguem as cores e a identidade, sem o logo (os templates removem e alertam se o spec tentar usá-lo; logos de parceiros continuam permitidos).
+
 Os SVGs saem do PDF vetorial do Chromium convertido pelo PyMuPDF (`tools.py pdf2svg`): o texto vira curvas, então abrem iguais em qualquer programa, sem precisar das fontes.
 
 Fluxo: **Nova campanha → agente analisa, recorta imagens, gera prévias e se corrige → render final → revisão da equipe (aprovar ou "refazer com ajuste")**.
