@@ -47,6 +47,8 @@ const checks = {
   'briefing no modo ADAPTAR': textos.includes('MODO ADAPTAR') && textos.includes('Sorriso Odontologia'),
   'logo vetorial preparado': textos.includes('LOGO DA NOVA CLÍNICA') && fs.existsSync(path.join(dir, 'assets/logo_cliente.svg')),
   'display em SVG': !!j.saidas?.display_svg && fs.readFileSync(path.join(dir, j.saidas.display_svg), 'utf8').startsWith('<svg'),
+  'SVG com texto editável': !!j.saidas?.display_svg && /<text[^>]*>.*IMPLANTE DAY/.test(fs.readFileSync(path.join(dir, j.saidas.display_svg), 'utf8')),
+  'ZIP de fontes': !!j.saidas?.fontes_zip && fs.existsSync(path.join(dir, j.saidas.fontes_zip)),
   'SVG em 148mm': !!j.saidas?.display_svg && /width="148mm" height="210mm"/.test(fs.readFileSync(path.join(dir, j.saidas.display_svg), 'utf8').slice(0, 600)),
 };
 for (const [k, v] of Object.entries(checks)) console.log(`${v ? '✓' : '✗'} ${k}`);

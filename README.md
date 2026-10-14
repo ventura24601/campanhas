@@ -4,9 +4,10 @@ Sistema interno onde a equipe envia **uma peça de referência** (vídeo, imagem
 
 | Peça | Saída |
 |---|---|
-| Barra em L | **SVG** 1920×216 (vetor, texto em curvas) + PNG 1920×216 e HD 3840×432 |
+| Barra em L | **SVG** e **PDF** 1920×216 com texto editável + PNG 1920×216 e HD 3840×432 |
 | Vídeo | MP4 1920×1080, 25 fps, ~40 s (6 cenas animadas) |
-| Display de mesa | **SVG** A5 (148×210 mm) + PDF vetorial para impressão + PNG 300 dpi |
+| Display de mesa | **SVG** A5 (148×210 mm) e **PDF** de impressão, ambos com texto editável + PNG 300 dpi |
+| Fontes | ZIP com as fontes usadas (TTF), para instalar antes de editar |
 
 Dois modos na tela "Nova campanha":
 - **Criar as peças que faltam** — envia uma peça da campanha; o agente cria as outras.
@@ -14,7 +15,7 @@ Dois modos na tela "Nova campanha":
 
 Regra de marca: **o logo da clínica aparece só no display**. Barra e vídeo seguem as cores e a identidade, sem o logo (os templates removem e alertam se o spec tentar usá-lo; logos de parceiros continuam permitidos).
 
-Os SVGs saem do PDF vetorial do Chromium convertido pelo PyMuPDF (`tools.py pdf2svg`): o texto vira curvas, então abrem iguais em qualquer programa, sem precisar das fontes.
+SVG editável (`src/svg.js`): fundo, fotos e formas vêm do PDF vetorial do Chromium convertido pelo PyMuPDF (`tools.py pdf2svg`), sem os textos; cada linha de texto entra como `<text>` centralizado com `<tspan>` por estilo, e as fontes vão embutidas (@font-face) para o arquivo abrir certo no navegador. Para editar no Illustrator/Figma/Corel, instale as fontes do ZIP. As fontes empacotadas são carregadas em `.woff` porque os `.woff2` do @fontsource trazem nomes internos errados (ex.: "MontserratThin-Bold"), que iriam para o PDF.
 
 Fluxo: **Nova campanha → agente analisa, recorta imagens, gera prévias e se corrige → render final → revisão da equipe (aprovar ou "refazer com ajuste")**.
 

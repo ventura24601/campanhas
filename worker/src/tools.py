@@ -252,6 +252,32 @@ def pdf2svg(a):
     return {"arquivo": a["out"], "bytes": os.path.getsize(a["out"])}
 
 
+def fontes_zip(a):
+    """Fontes usadas nas peças → ZIP com TTF/OTF instaláveis (Illustrator/Figma). fontes: [{family, weight, arquivo}]"""
+    import zipfile, io
+    from fontTools.ttLib import TTFont
+    pesos = {100: "Thin", 200: "ExtraLight", 300: "Light", 400: "Regular", 500: "Medium", 600: "SemiBold", 700: "Bold", 800: "ExtraBold", 900: "Black"}
+    nomes = []
+    with zipfile.ZipFile(a["out"], "w", zipfile.ZIP_DEFLATED) as z:
+        for f in a["fontes"]:
+            ext = os.path.splitext(f["arquivo"])[1].lower()
+            base = f["family"].replace(" ", "") + "-" + pesos.get(int(f.get("weight", 400)), str(f.get("weight")))
+            if ext in (".woff", ".woff2"):
+                ft = TTFont(f["arquivo"])
+                ft.flavor = None
+                ext = ".otf" if "CFF " in ft else ".ttf"
+                buf = io.BytesIO(); ft.save(buf); dados = buf.getvalue()
+            else:
+                dados = open(f["arquivo"], "rb").read()
+            nome = base + ext
+            if nome not in nomes:
+                z.writestr(nome, dados); nomes.append(nome)
+        z.writestr("LEIA-ME.txt", "Instale estas fontes antes de abrir o SVG ou o PDF no Illustrator, Figma ou Corel para editar os textos.\n"
+                   "Se a fonte ja estiver instalada no computador, nao precisa instalar de novo.\n"
+                   "Fontes extraidas do material do cliente podem conter so os caracteres usados na peca original.\n")
+    return {"arquivo": a["out"], "fontes": nomes}
+
+
 def raster(a):
     """SVG ou PDF (1ª página) → PNG com transparência, lado maior = max px."""
     import fitz
@@ -264,7 +290,7 @@ def raster(a):
 
 
 CMDS = {"probe": probe, "video": video, "frame": frame, "pdf": pdf, "image": image, "crop": crop, "palette": palette, "sheet": sheet,
-        "pdf2svg": pdf2svg, "raster": raster, "preview": lambda a: preview(a["src"], a["out"], a.get("max", PREVIEW_MAX))}
+        "pdf2svg": pdf2svg, "raster": raster, "fontes_zip": fontes_zip, "preview": lambda a: preview(a["src"], a["out"], a.get("max", PREVIEW_MAX))}
 
 if __name__ == "__main__":
     cmd = sys.argv[1]

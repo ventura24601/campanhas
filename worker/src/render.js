@@ -6,6 +6,7 @@ import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from 'playwright-core';
 import { fontManifest } from './fonts.js';
+import { prepararTextosEditaveis, comporSvgEditavel } from './svg.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TPL = path.join(ROOT, 'templates');
@@ -52,19 +53,23 @@ async function open(kind, spec, jobDir, { scale = 1 } = {}) {
   try { await page.waitForFunction(() => window.__ready === true, null, { timeout: 30000 }); }
   catch (e) { throw new Error(`template ${kind} não ficou pronto: ${errors.join(' | ') || e.message}`); }
   page.__errors = errors;
+  page.__fonts = fonts;
   return page;
 }
 
 async function qaOf(page) { return page.evaluate(() => (window.__qa ? window.__qa() : [])); }
 
-// Página → PDF vetorial do Chromium → SVG (texto em curvas, fotos embutidas)
+// Página → SVG editável: base vetorial sem texto (PDF do Chromium → SVG) + textos como <text>.
+// Destrutivo (esconde os textos da página): chame por último.
 async function toSvg(page, outSvg, w, h, fisico = {}) {
   const tmpPdf = outSvg.replace(/\.svg$/, '.tmp.pdf');
   await page.emulateMedia({ media: 'screen' });
+  const textos = await prepararTextosEditaveis(page, page.__fonts || []);
   await page.pdf({ path: tmpPdf, width: fisico.pdfW || `${w}px`, height: fisico.pdfH || `${h}px`, printBackground: true, pageRanges: '1' });
   await py('pdf2svg', { pdf: tmpPdf, out: outSvg, w, h, ...(fisico.largura ? { largura: fisico.largura, altura: fisico.altura } : {}) });
   fs.rmSync(tmpPdf, { force: true });
-  return outSvg;
+  fs.writeFileSync(outSvg, comporSvgEditavel(fs.readFileSync(outSvg, 'utf8'), textos));
+  return { arquivo: outSvg, fontes: textos.fontes };
 }
 
 export async function renderBar(spec, jobDir, outDir, { hd = true, svg = false } = {}) {
@@ -74,7 +79,13 @@ export async function renderBar(spec, jobDir, outDir, { hd = true, svg = false }
   const f1 = path.join(outDir, 'barra_1920x216.png');
   await p1.screenshot({ path: f1 });
   const out = { barra: f1, qa };
-  if (svg) out.barra_svg = await toSvg(p1, path.join(outDir, 'barra_1920x216.svg'), 1920, 216);
+  if (svg) {
+    out.barra_pdf = path.join(outDir, 'barra_1920x216.pdf');
+    await p1.emulateMedia({ media: 'screen' });
+    await p1.pdf({ path: out.barra_pdf, width: '1920px', height: '216px', printBackground: true, pageRanges: '1' });
+    const sv = await toSvg(p1, path.join(outDir, 'barra_1920x216.svg'), 1920, 216);
+    out.barra_svg = sv.arquivo; out.fontes = sv.fontes;
+  }
   await p1.close();
   if (hd) {
     const p2 = await open('bar', spec, jobDir, { scale: 2 });
@@ -96,7 +107,10 @@ export async function renderDisplay(spec, jobDir, outDir, { pdf = true, svg = fa
     out.display_pdf = path.join(outDir, 'display_A5.pdf');
     await p.pdf({ path: out.display_pdf, width: '148mm', height: '210mm', printBackground: true, preferCSSPageSize: true });
   }
-  if (svg) out.display_svg = await toSvg(p, path.join(outDir, 'display_A5.svg'), 559, 794, { pdfW: '148mm', pdfH: '210mm', largura: '148mm', altura: '210mm' });
+  if (svg) {
+    const sv = await toSvg(p, path.join(outDir, 'display_A5.svg'), 559, 794, { pdfW: '148mm', pdfH: '210mm', largura: '148mm', altura: '210mm' });
+    out.display_svg = sv.arquivo; out.fontes = sv.fontes;
+  }
   await p.close();
   return out;
 }

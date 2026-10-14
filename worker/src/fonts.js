@@ -16,21 +16,30 @@ export const BUNDLED = {
   'DM Serif Display': 'dm-serif-display',
 };
 
-/** Retorna [{family, url, weight}] para @font-face. extraidas: [{family, arquivo}] (caminhos absolutos). */
+/** Retorna [{family, url, weight, arquivo}] para @font-face. extraidas: [{family, arquivo}] (caminhos absolutos).
+ *  Usa .woff (não .woff2): o .woff2 empacotado traz nomes internos errados ("MontserratThin-Bold"),
+ *  e esses nomes vão para o PDF — o Illustrator não reconheceria a fonte instalada. */
 export function fontManifest(extraidas = []) {
   const out = [];
   for (const [family, slug] of Object.entries(BUNDLED)) {
     const dir = path.join(FS_DIR, slug, 'files');
     if (!fs.existsSync(dir)) continue;
     for (const f of fs.readdirSync(dir)) {
-      const m = f.match(new RegExp(`^${slug}-latin-(\\d{3})-normal\\.woff2$`));
-      if (m) out.push({ family, url: pathToFileURL(path.join(dir, f)).href, weight: Number(m[1]) });
+      const m = f.match(new RegExp(`^${slug}-latin-(\\d{3})-normal\\.woff$`));
+      if (m) out.push({ family, url: pathToFileURL(path.join(dir, f)).href, weight: Number(m[1]), arquivo: path.join(dir, f) });
     }
   }
   for (const f of extraidas) {
-    out.push({ family: f.family, url: pathToFileURL(f.arquivo).href, weight: 400 });
+    out.push({ family: f.family, url: pathToFileURL(f.arquivo).href, weight: 400, arquivo: f.arquivo });
   }
   return out;
+}
+
+/** Arquivo da fonte mais próxima de (família, peso) no manifesto. */
+export function arquivoDaFonte(manifest, family, weight) {
+  const c = manifest.filter((f) => f.family.toLowerCase() === String(family).toLowerCase());
+  if (!c.length) return null;
+  return c.reduce((a, b) => (Math.abs(b.weight - weight) < Math.abs(a.weight - weight) ? b : a));
 }
 
 export function familiasDisponiveis(extraidas = []) {

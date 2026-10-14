@@ -130,13 +130,15 @@ async function processar(id, comentario = null) {
     fs.writeFileSync(path.join(out, 'spec.json'), JSON.stringify(r.spec, null, 2));
     const saidas = {};
     const alertasRender = [];
+    const fontesUsadas = [];
     const nome = `${(r.spec.clinica || job.briefing.clinica || 'CLINICA')}_${(r.spec.campanha || job.briefing.campanha || 'CAMPANHA')}`.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-').toUpperCase();
     if (r.pecas.includes('barra')) {
       log(id, 'Renderizando a barra');
       const b = await renderBar(r.spec, dir, out, { svg: true });
-      const fs_ = path.join(out, `${nome}_BARRA_1920x216.svg`), f1 = path.join(out, `${nome}_BARRA_1920x216.png`), f2 = path.join(out, `${nome}_BARRA_3840x432.png`);
-      fs.renameSync(b.barra_svg, fs_); fs.renameSync(b.barra, f1); fs.renameSync(b.barra_hd, f2);
-      saidas.barra_svg = path.relative(dir, fs_); saidas.barra = path.relative(dir, f1); saidas.barra_hd = path.relative(dir, f2);
+      const fs_ = path.join(out, `${nome}_BARRA_1920x216.svg`), fpd = path.join(out, `${nome}_BARRA_1920x216.pdf`), f1 = path.join(out, `${nome}_BARRA_1920x216.png`), f2 = path.join(out, `${nome}_BARRA_3840x432.png`);
+      fs.renameSync(b.barra_svg, fs_); fs.renameSync(b.barra_pdf, fpd); fs.renameSync(b.barra, f1); fs.renameSync(b.barra_hd, f2);
+      saidas.barra_svg = path.relative(dir, fs_); saidas.barra_pdf = path.relative(dir, fpd); saidas.barra = path.relative(dir, f1); saidas.barra_hd = path.relative(dir, f2);
+      fontesUsadas.push(...(b.fontes || []));
       alertasRender.push(...b.qa);
     }
     if (r.pecas.includes('display')) {
@@ -145,6 +147,7 @@ async function processar(id, comentario = null) {
       const fsv = path.join(out, `${nome}_DISPLAY_A5.svg`), fp = path.join(out, `${nome}_DISPLAY_A5.pdf`), fg = path.join(out, `${nome}_DISPLAY_A5.png`);
       fs.renameSync(d.display_svg, fsv); fs.renameSync(d.display_pdf, fp); fs.renameSync(d.display_png, fg);
       saidas.display_svg = path.relative(dir, fsv);
+      fontesUsadas.push(...(d.fontes || []));
       const pv = await py('preview', { src: fg, out: path.join(out, 'display_prev.jpg'), max: 1100 });
       saidas.display_pdf = path.relative(dir, fp); saidas.display_png = path.relative(dir, fg); saidas.display_prev = path.relative(dir, pv.preview);
       alertasRender.push(...d.qa);
@@ -156,6 +159,11 @@ async function processar(id, comentario = null) {
       await renderVideo(r.spec, dir, fv, { audio, onProgress: (p) => atualizar(id, (j) => { j.etapa = `Renderizando o vídeo ${Math.round(p * 100)}%`; }) });
       saidas.video = path.relative(dir, fv);
       if (ctx_has(ag)) { const last = ag.ultimaPrevia; const vf = last?.itens?.find((i) => i.tipo === 'video'); if (vf) { const dst = path.join(out, 'video_cenas.jpg'); fs.copyFileSync(vf.arquivo, dst); saidas.previa_video = path.relative(dir, dst); } }
+    }
+    if (fontesUsadas.length) {
+      const fz = path.join(out, `${nome}_FONTES.zip`);
+      await py('fontes_zip', { fontes: [...new Map(fontesUsadas.map((f) => [`${f.family}|${f.weight}`, f])).values()], out: fz });
+      saidas.fontes_zip = path.relative(dir, fz);
     }
     atualizar(id, (j) => {
       j.status = 'revisao'; j.etapa = 'Pronto para revisão'; j.versao = versao; j.spec = r.spec; j.pecas = r.pecas; j.saidas = saidas;
