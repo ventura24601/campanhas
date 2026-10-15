@@ -4,7 +4,7 @@ Sistema interno onde a equipe envia **uma peça de referência** (vídeo, imagem
 
 | Peça | Saída |
 |---|---|
-| Barra em L | **SVG** e **PDF** 1920×216 com texto editável + PNG 1920×216 e HD 3840×432 |
+| L (lateral + barra) | Um arquivo 1920×1080 com a janela do vídeo (1536×864) transparente: **SVG** e **PDF** com texto editável + PNG e PNG HD 3840×2160. Formatos `classico` (lateral 384×864 + barra 1920×216) e `coluna` (lateral 384×1080 + barra 1536×216) |
 | Vídeo | MP4 1920×1080, 25 fps, ~40 s (6 cenas animadas) |
 | Display de mesa | **SVG** A5 (148×210 mm) e **PDF** de impressão, ambos com texto editável + PNG 300 dpi |
 | Fontes | ZIP com as fontes usadas (TTF), para instalar antes de editar |

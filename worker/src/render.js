@@ -38,18 +38,20 @@ async function browser() {
 }
 export async function closeBrowser() { if (_browser) { await _browser.close(); _browser = null; } }
 
-const SIZES = { video: [1920, 1080], bar: [1920, 216], display: [559, 794] };
+// "bar" é a peça em L inteira (lateral + barra) — 1920x1080 com a janela do vídeo transparente
+const SIZES = { video: [1920, 1080], bar: [1920, 1080], display: [559, 794] };
+const TEMPLATE = { video: 'video', bar: 'l', display: 'display' };
 
-async function open(kind, spec, jobDir, { scale = 1 } = {}) {
+async function open(kind, spec, jobDir, { scale = 1, previa = false } = {}) {
   const b = await browser();
   const [w, h] = SIZES[kind];
   const page = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: scale });
   const fonts = fontManifest((spec.fontes_extras || []).map((f) => ({ family: f.familia, arquivo: path.resolve(jobDir, f.arquivo) })));
   const base = pathToFileURL(jobDir).href + '/';
-  await page.addInitScript(({ spec, base, fonts }) => { window.__SPEC = spec; window.__BASE = base; window.__FONTS = fonts; }, { spec, base, fonts });
+  await page.addInitScript(({ spec, base, fonts, previa }) => { window.__SPEC = spec; window.__BASE = base; window.__FONTS = fonts; window.__PREVIA = previa; }, { spec, base, fonts, previa });
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
-  await page.goto(pathToFileURL(path.join(TPL, `${kind}.html`)).href);
+  await page.goto(pathToFileURL(path.join(TPL, `${TEMPLATE[kind]}.html`)).href);
   try { await page.waitForFunction(() => window.__ready === true, null, { timeout: 30000 }); }
   catch (e) { throw new Error(`template ${kind} não ficou pronto: ${errors.join(' | ') || e.message}`); }
   page.__errors = errors;
@@ -72,25 +74,25 @@ async function toSvg(page, outSvg, w, h, fisico = {}) {
   return { arquivo: outSvg, fontes: textos.fontes };
 }
 
-export async function renderBar(spec, jobDir, outDir, { hd = true, svg = false } = {}) {
+export async function renderBar(spec, jobDir, outDir, { hd = true, svg = false, previa = false } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
-  const p1 = await open('bar', spec, jobDir);
+  const p1 = await open('bar', spec, jobDir, { previa });
   const qa = await qaOf(p1);
-  const f1 = path.join(outDir, 'barra_1920x216.png');
-  await p1.screenshot({ path: f1 });
+  const f1 = path.join(outDir, 'L_1920x1080.png');
+  await p1.screenshot({ path: f1, omitBackground: !previa });
   const out = { barra: f1, qa };
   if (svg) {
-    out.barra_pdf = path.join(outDir, 'barra_1920x216.pdf');
+    out.barra_pdf = path.join(outDir, 'L_1920x1080.pdf');
     await p1.emulateMedia({ media: 'screen' });
-    await p1.pdf({ path: out.barra_pdf, width: '1920px', height: '216px', printBackground: true, pageRanges: '1' });
-    const sv = await toSvg(p1, path.join(outDir, 'barra_1920x216.svg'), 1920, 216);
+    await p1.pdf({ path: out.barra_pdf, width: '1920px', height: '1080px', printBackground: true, pageRanges: '1' });
+    const sv = await toSvg(p1, path.join(outDir, 'L_1920x1080.svg'), 1920, 1080);
     out.barra_svg = sv.arquivo; out.fontes = sv.fontes;
   }
   await p1.close();
   if (hd) {
     const p2 = await open('bar', spec, jobDir, { scale: 2 });
-    out.barra_hd = path.join(outDir, 'barra_3840x432.png');
-    await p2.screenshot({ path: out.barra_hd });
+    out.barra_hd = path.join(outDir, 'L_3840x2160.png');
+    await p2.screenshot({ path: out.barra_hd, omitBackground: true });
     await p2.close();
   }
   return out;
@@ -171,7 +173,7 @@ export async function renderPreview(spec, jobDir, outDir, kinds) {
     items.push({ tipo: 'video', arquivo: sh.arquivo });
   }
   if (kinds.includes('barra')) {
-    const b = await renderBar(spec, jobDir, path.join(outDir, 'barra'), { hd: false });
+    const b = await renderBar(spec, jobDir, path.join(outDir, 'barra'), { hd: false, previa: true });
     qa = qa.concat(b.qa);
     items.push({ tipo: 'barra', arquivo: b.barra });
   }

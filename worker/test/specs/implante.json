@@ -2,45 +2,216 @@
   "clinica": "AKVO Odontologia",
   "campanha": "Implante Day",
   "marca": {
-    "fundo": "#F3EDE7", "texto": "#141B32", "texto_suave": "#3B3F4A", "destaque": "#809AC6",
-    "destaque_texto": "#FFFFFF", "fundo_claro": "#E7DED4",
-    "fonte_titulo": "SALVAGER", "fonte_texto": "Montserrat", "titulo_peso": 400, "motivo": "linhas", "logo": "logo"
+    "fundo": "#F3EDE7",
+    "texto": "#141B32",
+    "texto_suave": "#3B3F4A",
+    "destaque": "#809AC6",
+    "destaque_texto": "#FFFFFF",
+    "fundo_claro": "#E7DED4",
+    "fonte_titulo": "SALVAGER",
+    "fonte_texto": "Montserrat",
+    "titulo_peso": 400,
+    "motivo": "linhas",
+    "logo": "logo"
   },
-  "fontes_extras": [{ "familia": "SALVAGER", "arquivo": "fonts/SALVAGER.ttf" }],
+  "fontes_extras": [
+    {
+      "familia": "SALVAGER",
+      "arquivo": "fonts/SALVAGER.ttf"
+    }
+  ],
   "assets": {
-    "mulher": { "arquivo": "assets/mulher.jpg" }, "homem": { "arquivo": "assets/homem.jpg" },
-    "implante": { "arquivo": "assets/implant.png" }, "logo": { "arquivo": "assets/akvo.png" }
+    "mulher": {
+      "arquivo": "assets/mulher.jpg"
+    },
+    "homem": {
+      "arquivo": "assets/homem.jpg"
+    },
+    "implante": {
+      "arquivo": "assets/implant.png"
+    },
+    "logo": {
+      "arquivo": "assets/akvo.png"
+    }
   },
   "barra": {
     "blocos": [
-      { "tipo": "texto", "titulo": "Seu novo sorriso começa aqui.", "texto": ["Volte a **sorrir**, **mastigar** e **viver**", "com liberdade, com **descontos exclusivos**", "e **condições de parcelamento**."] },
-      { "tipo": "premio", "imagem": "mulher", "posicao": "45% 30%", "titulo": ["Implante Day", "26 de setembro"] },
-      { "tipo": "cta", "linha1": "Saiba mais", "linha2": "[[na recepção]]", "selo": "Dia 26 de setembro" }
+      {
+        "tipo": "texto",
+        "texto": [
+          "Seu **novo**",
+          "**sorriso** pode",
+          "**começar agora**!"
+        ],
+        "tamanho": 30
+      },
+      {
+        "tipo": "pilula",
+        "texto": "DIA 26 DE SETEMBRO",
+        "imagem": "implante"
+      },
+      {
+        "tipo": "texto",
+        "texto": [
+          "**Condições**",
+          "**especiais** para",
+          "seus implantes."
+        ],
+        "tamanho": 30
+      },
+      {
+        "tipo": "cta",
+        "estilo": "titulo",
+        "linha1": "SAIBA MAIS",
+        "linha2": "NA RECEPÇÃO"
+      }
     ]
   },
   "display": {
-    "titulo": "IMPLANTE DAY", "subtitulo": "Volte a sorrir com confiança!",
-    "fotos": ["mulher", "homem"], "posicoes": ["45% 30%", "50% 15%"],
+    "titulo": "IMPLANTE DAY",
+    "subtitulo": "Volte a sorrir com confiança!",
+    "fotos": [
+      "mulher",
+      "homem"
+    ],
+    "posicoes": [
+      "45% 30%",
+      "50% 15%"
+    ],
     "chamada": "Seu **novo sorriso** pode **começar agora**!",
-    "pilula": "DIA 26 DE SETEMBRO", "pilula_imagem": "implante",
-    "beneficios": [["Descontos", "exclusivos"], ["Condições de", "parcelamento"]],
+    "pilula": "DIA 26 DE SETEMBRO",
+    "pilula_imagem": "implante",
+    "beneficios": [
+      [
+        "Descontos",
+        "exclusivos"
+      ],
+      [
+        "Condições de",
+        "parcelamento"
+      ]
+    ],
     "frase": "Volte a **sorrir**, **mastigar** e **viver** com liberdade!",
-    "cta": ["SAIBA MAIS", "NA RECEPÇÃO"], "logo": "logo"
+    "cta": [
+      "SAIBA MAIS",
+      "NA RECEPÇÃO"
+    ],
+    "logo": "logo"
   },
   "video": {
     "duracao": 40,
     "cenas": [
-      { "tipo": "abertura", "titulo": ["IMPLANTE", "DAY"], "subtitulo": "Volte a sorrir com confiança!", "tamanho_titulo": 190,
-        "midia": { "tipo": "fotos2", "imagens": ["mulher", "homem"], "posicoes": ["45% 30%", "50% 15%"] } },
-      { "tipo": "midia_texto", "lado": "esquerda", "midia": { "tipo": "foto", "imagem": "mulher", "posicao": "42% 40%", "largura": 760 },
-        "titulo": ["Seu **novo sorriso**", "pode **começar**", "**agora**!"], "texto": ["[[Um dia inteiro dedicado]]", "[[ao seu implante.]]"] },
-      { "tipo": "midia_texto", "lado": "direita", "midia": { "tipo": "objeto", "imagem": "implante" },
-        "titulo": ["Volte a **sorrir**,", "**mastigar** e", "**viver** com", "[[liberdade!]]"], "tamanho_titulo": 90 },
-      { "tipo": "data", "kicker": "MARQUE NA AGENDA", "pilula": "DIA 26 DE SETEMBRO", "numero": "26", "imagem": "implante",
-        "texto": "Seu **novo sorriso** pode **começar agora**!" },
-      { "tipo": "beneficios", "midia": { "tipo": "foto", "imagem": "homem", "posicao": "50% 30%" }, "kicker": "SOMENTE NO IMPLANTE DAY",
-        "itens": [["Descontos", "exclusivos"], ["Condições de", "parcelamento"]], "texto": ["Condições pensadas para você", "dar o primeiro passo."] },
-      { "tipo": "cta", "titulo": ["SAIBA MAIS", "NA RECEPÇÃO"], "selo": "Implante Day · 26 de setembro", "duracao": 5.8 }
+      {
+        "tipo": "abertura",
+        "titulo": [
+          "IMPLANTE",
+          "DAY"
+        ],
+        "subtitulo": "Volte a sorrir com confiança!",
+        "tamanho_titulo": 190,
+        "midia": {
+          "tipo": "fotos2",
+          "imagens": [
+            "mulher",
+            "homem"
+          ],
+          "posicoes": [
+            "45% 30%",
+            "50% 15%"
+          ]
+        }
+      },
+      {
+        "tipo": "midia_texto",
+        "lado": "esquerda",
+        "midia": {
+          "tipo": "foto",
+          "imagem": "mulher",
+          "posicao": "42% 40%",
+          "largura": 760
+        },
+        "titulo": [
+          "Seu **novo sorriso**",
+          "pode **começar**",
+          "**agora**!"
+        ],
+        "texto": [
+          "[[Um dia inteiro dedicado]]",
+          "[[ao seu implante.]]"
+        ]
+      },
+      {
+        "tipo": "midia_texto",
+        "lado": "direita",
+        "midia": {
+          "tipo": "objeto",
+          "imagem": "implante"
+        },
+        "titulo": [
+          "Volte a **sorrir**,",
+          "**mastigar** e",
+          "**viver** com",
+          "[[liberdade!]]"
+        ],
+        "tamanho_titulo": 90
+      },
+      {
+        "tipo": "data",
+        "kicker": "MARQUE NA AGENDA",
+        "pilula": "DIA 26 DE SETEMBRO",
+        "numero": "26",
+        "imagem": "implante",
+        "texto": "Seu **novo sorriso** pode **começar agora**!"
+      },
+      {
+        "tipo": "beneficios",
+        "midia": {
+          "tipo": "foto",
+          "imagem": "homem",
+          "posicao": "50% 30%"
+        },
+        "kicker": "SOMENTE NO IMPLANTE DAY",
+        "itens": [
+          [
+            "Descontos",
+            "exclusivos"
+          ],
+          [
+            "Condições de",
+            "parcelamento"
+          ]
+        ],
+        "texto": [
+          "Condições pensadas para você",
+          "dar o primeiro passo."
+        ]
+      },
+      {
+        "tipo": "cta",
+        "titulo": [
+          "SAIBA MAIS",
+          "NA RECEPÇÃO"
+        ],
+        "selo": "Implante Day · 26 de setembro",
+        "duracao": 5.8
+      }
     ]
+  },
+  "lateral": {
+    "formato": "coluna",
+    "titulo": "IMPLANTE DAY",
+    "tamanho_titulo": 46,
+    "subtitulo": "Volte a sorrir com confiança!",
+    "midia": {
+      "tipo": "fotos",
+      "imagens": [
+        "mulher",
+        "homem"
+      ],
+      "posicoes": [
+        "66% 30%",
+        "50% 15%"
+      ]
+    }
   }
 }

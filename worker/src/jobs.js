@@ -133,9 +133,9 @@ async function processar(id, comentario = null) {
     const fontesUsadas = [];
     const nome = `${(r.spec.clinica || job.briefing.clinica || 'CLINICA')}_${(r.spec.campanha || job.briefing.campanha || 'CAMPANHA')}`.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-').toUpperCase();
     if (r.pecas.includes('barra')) {
-      log(id, 'Renderizando a barra');
+      log(id, 'Renderizando o L');
       const b = await renderBar(r.spec, dir, out, { svg: true });
-      const fs_ = path.join(out, `${nome}_BARRA_1920x216.svg`), fpd = path.join(out, `${nome}_BARRA_1920x216.pdf`), f1 = path.join(out, `${nome}_BARRA_1920x216.png`), f2 = path.join(out, `${nome}_BARRA_3840x432.png`);
+      const fs_ = path.join(out, `${nome}_L_1920x1080.svg`), fpd = path.join(out, `${nome}_L_1920x1080.pdf`), f1 = path.join(out, `${nome}_L_1920x1080.png`), f2 = path.join(out, `${nome}_L_3840x2160.png`);
       fs.renameSync(b.barra_svg, fs_); fs.renameSync(b.barra_pdf, fpd); fs.renameSync(b.barra, f1); fs.renameSync(b.barra_hd, f2);
       saidas.barra_svg = path.relative(dir, fs_); saidas.barra_pdf = path.relative(dir, fpd); saidas.barra = path.relative(dir, f1); saidas.barra_hd = path.relative(dir, f2);
       fontesUsadas.push(...(b.fontes || []));

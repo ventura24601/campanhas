@@ -1,0 +1,92 @@
+<!doctype html><html><head><meta charset="utf-8">
+<script src="common.js"></script>
+<script src="barra.js"></script>
+<style>
+html,body{width:1920px;height:1080px}
+.zona{position:absolute;background:var(--bg);overflow:hidden}
+#lat{display:flex;flex-direction:column;align-items:center;padding:56px 28px 0;text-align:center;gap:14px}
+#bar{display:flex;align-items:stretch;justify-content:center}
+#janela{position:absolute;left:384px;top:0;width:1536px;height:864px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.borda{position:absolute;background:var(--light)}
+.kick{font-weight:600;letter-spacing:.22em;color:var(--tx);font-size:17px}
+.faixa{display:inline-block;color:#fff;font-weight:800;padding:.08em .32em .1em;border-radius:6px;line-height:1.15}
+.balao{position:relative;background:var(--ac);color:var(--actx);border-radius:14px;padding:12px 18px;line-height:1.2}
+.balao b,.balao .ac{color:inherit}
+.midia{position:relative;flex:1 1 auto;width:100%;min-height:0;display:flex;flex-direction:column;gap:12px}
+.ft{overflow:hidden;border-radius:18px;flex:1 1 0;min-height:0}
+.ft img{width:100%;height:100%;object-fit:cover;display:block}
+.linha-v{position:absolute;width:2px;background:var(--ac);opacity:.55}
+body.previa #janela{background:#5E5E5E;display:flex;align-items:center;justify-content:center;color:#BDBDBD;font:600 40px sans-serif;letter-spacing:.2em}
+</style></head><body>
+<script>
+(function () {
+  const { S, M, rich, lines, asset, fitAll, qa } = window.T;
+  T.injectBase();
+  document.head.insertAdjacentHTML('beforeend', `<style>${T.cssBarra}\nhtml,body{background:transparent!important}</style>`);
+  const L = S.lateral || {};
+  const coluna = (L.formato || 'classico') === 'coluna';
+  // coluna: lateral 384x1080 e barra 1536x216 à direita · clássico: lateral 384x864 e barra 1920x216
+  const LAT = { x: 0, y: 0, w: 384, h: coluna ? 1080 : 864 };
+  const BAR = coluna ? { x: 384, y: 864, w: 1536, h: 216 } : { x: 0, y: 864, w: 1920, h: 216 };
+  const box = (id, r) => `<div id="${id}" class="zona" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px"></div>`;
+  document.body.insertAdjacentHTML('beforeend', box('lat', LAT) + box('bar', BAR) + '<div id="janela"></div>');
+  // bordas finas em volta da janela do vídeo
+  document.body.insertAdjacentHTML('beforeend', `<div class="borda" style="left:382px;top:0;width:2px;height:864px"></div><div class="borda" style="left:384px;top:862px;width:1536px;height:2px"></div>`);
+  if (document.body.dataset.previa !== undefined || window.__PREVIA) { document.body.classList.add('previa'); document.getElementById('janela').textContent = 'VÍDEO'; }
+
+  const inner = LAT.w - 56;
+  const blk = (txt, size, maxW, maxH, min, css, cls) => `<div class="blk ${cls || ''}" data-qa="texto" data-fit="${maxW},${maxH},${min}" style="font-size:${size}px;line-height:1.08;${css || ''}">${lines(txt)}</div>`;
+  let h = '';
+  if (L.kicker) h += blk(L.kicker, 17, inner, 0, 11, '', 'kick');
+  if (L.titulo) {
+    if (L.estilo_titulo === 'faixas') {
+      // cada linha numa faixa da cor de destaque (2ª linha mais clara); objeto opcional ao lado
+      const ls = Array.isArray(L.titulo) ? L.titulo : [L.titulo];
+      const obj = L.imagem_titulo ? `<img src="${asset(L.imagem_titulo)}" style="position:absolute;right:-10px;top:50%;height:110px;transform:translateY(-50%)">` : '';
+      h += `<div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;${obj ? 'padding-right:40px' : ''}">${ls.map((l, i) => `<div class="blk" data-qa="texto" data-fit="${inner - (obj ? 50 : 0)},0,18"><span class="faixa" style="font-size:${L.tamanho_titulo || 42}px;background:var(--ac);${i % 2 ? 'opacity:.72' : ''}">${rich(l)}</span></div>`).join('')}${obj}</div>`;
+    } else {
+      h += blk(L.titulo, L.tamanho_titulo || 54, inner, 230, 24, 'font-family:var(--ft);color:var(--tx);font-weight:var(--tw)', 'ttl');
+    }
+  }
+  if (L.subtitulo) h += blk(L.subtitulo, 21, inner, 56, 13, 'color:var(--ac);font-weight:500;margin-top:-4px');
+  if (L.balao) {
+    const icon = asset(M.icone);
+    // ícone da marca (ex.: coração no balão) metade para fora, à esquerda
+    h += `<div class="balao" data-qa="texto" style="${icon ? 'margin-left:34px;padding-left:44px' : ''}">${icon ? `<img src="${icon}" style="position:absolute;left:-34px;top:50%;width:68px;transform:translateY(-50%)">` : ''}<div class="blk" data-fit="${inner - (icon ? 96 : 40)},96,12" style="font-size:${L.tamanho_balao || 21}px">${lines(L.balao)}</div></div>`;
+  }
+  // mídia (sempre usar imagem na lateral): recorte | fotos (1–3)
+  const md = L.midia || {};
+  const ims = md.imagens || (md.imagem ? [md.imagem] : []);
+  const pos = md.posicoes || [];
+  if (md.tipo === 'recorte' && ims[0]) {
+    h += `<div class="midia" style="margin:0 -28px"><img data-qa="midia" src="${asset(ims[0])}" style="position:absolute;left:50%;bottom:0;transform:translateX(-50%);max-width:100%;max-height:100%;object-fit:contain"></div>`;
+  } else if (ims.length) {
+    const ft = (id, i, css) => `<div class="ft" data-qa="midia" style="${css || ''}"><img src="${asset(id)}" style="object-position:${pos[i] || '50% 30%'}"></div>`;
+    let g;
+    if (ims.length >= 3) g = `${ft(ims[0], 0, 'flex:1.25 1 0')}<div style="display:flex;gap:12px;flex:1 1 0;min-height:0">${ft(ims[1], 1)}${ft(ims[2], 2)}</div>`;
+    else if (ims.length === 2) g = `${ft(ims[0], 0, 'flex:1.45 1 0')}${ft(ims[1], 1)}`;
+    else g = ft(ims[0], 0);
+    const linhas = M.motivo === 'linhas' && ims.length === 2 ? `<div class="linha-v" style="right:-14px;top:4%;height:46%"></div><div class="linha-v" style="left:-14px;bottom:10%;height:26%"></div>` : '';
+    h += `<div class="midia" style="padding:${md.margem ?? 8}px ${md.lateral ?? 16}px ${coluna ? 28 : 24}px">${g}${linhas}</div>`;
+  }
+  document.getElementById('lat').innerHTML = h;
+  T.montarBarra(document.getElementById('bar'), (S.barra || {}).blocos || [], BAR.w, (S.barra || {}).larguras);
+
+  async function init() {
+    await T.loadFonts();
+    fitAll(document);
+    window.__qa = () => {
+      const w = qa('L', document.body, 1920, 1080);
+      // nada pode invadir a janela do vídeo
+      const J = { l: 384, t: 0, r: 1920, b: 864 };
+      document.querySelectorAll('[data-qa]').forEach((e) => {
+        const r = e.getBoundingClientRect();
+        if (r.width && r.right > J.l + 2 && r.left < J.r && r.bottom > J.t && r.top < J.b - 2) w.push(`L: elemento invade a área do vídeo — "${(e.textContent || e.querySelector('img')?.src || '').trim().slice(0, 40)}"`);
+      });
+      return [...new Set(w)];
+    };
+    window.__ready = true;
+  }
+  if (document.readyState === 'complete') init(); else window.addEventListener('load', init);
+})();
+</script></body></html>

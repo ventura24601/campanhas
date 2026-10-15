@@ -48,7 +48,7 @@ const TOOLS = [
   },
   {
     name: 'previa',
-    description: 'Renderiza as peças a partir do spec e devolve imagens (vídeo: um quadro de cada cena; barra; display) + alertas automáticos (texto que não coube, fora do quadro, sobre imagem, asset inexistente). Use quantas vezes precisar.',
+    description: 'Renderiza as peças a partir do spec e devolve imagens (vídeo: um quadro de cada cena; L inteiro com a janela do vídeo em cinza; display) + alertas automáticos (texto que não coube, fora do quadro, sobre imagem, asset inexistente). Use quantas vezes precisar.',
     input_schema: { type: 'object', properties: { spec: { type: 'object' }, pecas: { type: 'array', items: { type: 'string', enum: ['barra', 'display', 'video'] } } }, required: ['spec', 'pecas'] },
   },
   {

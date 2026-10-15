@@ -26,12 +26,26 @@ Marcação de texto (em qualquer campo de texto):
   "fontes_extras": [ { "familia": "SALVAGER", "arquivo": "fonts/SALVAGER.ttf" } ], // só fontes extraídas do PDF
   "assets": { "mulher": { "arquivo": "assets/mulher.png" } },  // preenchido com os recortes que você fez
 
-  "barra": {
+  "lateral": {                    // coluna esquerda do L
+    "formato": "classico",          // "classico": lateral 384x864 + barra 1920x216 · "coluna": lateral 384x1080 + barra 1536x216
+    "kicker": "CAMPANHA",           // opcional
+    "titulo": ["Um tempo", "para [[cuidar]]", "[[de você.]]"], "tamanho_titulo": 56,
+    "estilo_titulo": "texto",       // "texto" (fonte de título) | "faixas" (cada linha numa faixa da cor de destaque)
+    "imagem_titulo": "implante",    // opcional, só com "faixas": objeto ao lado das faixas
+    "subtitulo": "frase curta",     // opcional
+    "balao": ["Neste Outubro Rosa,", "cuide do seu **sorriso**"],  // opcional: caixa de destaque com o ícone da marca
+    "midia": { "tipo": "recorte", "imagens": ["modelo"] }        // SEMPRE uma imagem: "recorte" (pessoa sem fundo, na base)
+                                                                 // ou "fotos" com 1–3 imagens + "posicoes"
+  },
+
+  "barra": {                        // barra inferior do L — 3 ou 4 blocos
     "blocos": [
-      { "tipo": "texto", "titulo": "E participar é simples.", "texto": ["linha 1", "linha 2", "linha 3"] },
+      { "tipo": "texto", "titulo": "E participar é simples.", "texto": ["linha 1", "linha 2", "linha 3"] },  // "tamanho" opcional
       { "tipo": "premio", "imagem": "cafe", "posicao": "50% 40%", "titulo": ["Concorra a um café da", "manhã + acompanhante."], "texto": "opcional", "logo": "tijuca" }, // logo de PARCEIRO, nunca o da clínica
-      { "tipo": "cta", "linha1": "Saiba mais", "linha2": "[[na recepção]]", "selo": "O sorteio será no dia 31/10." }
-    ]
+      { "tipo": "pilula", "texto": "DIA 26 DE SETEMBRO", "imagem": "implante" },  // pílula grande; imagem (objeto sem fundo) opcional na ponta
+      { "tipo": "cta", "linha1": "Saiba mais", "linha2": "[[na recepção]]", "selo": "O sorteio será no dia 31/10." }  // "estilo": "titulo" → as 2 linhas na fonte de título
+    ],
+    "larguras": [520, 560, 456]     // opcional: largura de cada bloco (soma = largura da barra)
   },
 
   "display": {

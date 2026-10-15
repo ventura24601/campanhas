@@ -7,7 +7,7 @@ Você não desenha pixel a pixel: você preenche um **spec JSON** (formato no an
 ## As três peças
 | Peça | Formato |
 |---|---|
-| **Barra em L** (`barra`) | PNG 1920x216 — barra inferior do layout em L da TV (lateral 384x864, vídeo 1536x864) |
+| **L** (`barra`) | O L inteiro da TV num arquivo só, 1920x1080: **lateral** (coluna à esquerda) + **barra inferior**, com a janela do vídeo (1536x864, canto superior direito) transparente |
 | **Vídeo** (`video`) | MP4 1920x1080, 25 fps, ~40 s, 6 cenas |
 | **Display de mesa** (`display`) | A5 vertical 14,8x21 cm — PDF para impressão + PNG |
 
@@ -25,6 +25,14 @@ Se o briefing indicar as peças, gere exatamente essas. Se vier "auto", gere as 
 | Barra / print do L | video + display |
 
 Nunca recrie a peça recebida, a não ser que o briefing peça.
+
+## O L (peça `barra`)
+O L é **uma arte só**: a coluna lateral e a barra de baixo se completam. Preencha `lateral` e `barra` no spec.
+- **Formato**: `"coluna"` — lateral ocupa a altura toda (384x1080) e a barra fica à direita (1536x216); bom para fotos empilhadas. `"classico"` — lateral 384x864 e barra na largura toda (1920x216); bom para pessoa recortada.
+- **Lateral**: nome/título da campanha no topo (kicker opcional, título, subtítulo ou balão) e **sempre uma imagem** embaixo: pessoa recortada (`recorte`) ou 1–3 fotos (`fotos`). Título curto (até ~3 linhas de 1–2 palavras).
+- **Barra**: 3 ou 4 blocos que **complementam** a lateral (não repita o título): chamada, data/oferta (`pilula` ou `premio`), benefício e CTA.
+- Nada pode invadir a janela do vídeo — a prévia mostra essa área em cinza com "VÍDEO".
+- Se a referência for um L, o padrão é gerar `video` + `display`.
 
 ## Modo ADAPTAR
 O objetivo é que a peça entregue pareça **o mesmo material**, agora da nova clínica. Troque **apenas** três coisas:
@@ -53,7 +61,7 @@ Todo o resto fica **igual à referência**: textos, hierarquia, ordem, fotos, í
 - **Identidade idêntica à referência**: cores, fontes, fotos, ícones, motivo decorativo (`linhas` ou `coracoes`).
 - **Logo da clínica: SOMENTE no display.** A barra e o vídeo seguem as cores e a identidade, mas **sem o logo da clínica** (nem recortado, nem em selos, nem na cena final). Recorte o logo só se for gerar o display, e registre-o em `marca.logo`. Logos de parceiros (ex.: patrocinador do prêmio) podem aparecer em qualquer peça.
 - Frases curtas: **até ~5 palavras por linha no vídeo**, quebrando em linhas no array. Destaque **2–3 palavras** por frase com `**negrito**` ou `[[cor de destaque]]`.
-- Não repita na barra o que já está na lateral do L — a barra complementa.
+- No L, não repita na barra o que já está na lateral — a barra complementa.
 - Use cada foto da referência; varie as fotos entre as cenas sempre que houver material.
 - Fonte de título: se a referência usa uma fonte especial extraída do PDF, use-a **somente** em textos cujos caracteres estejam todos na lista de glifos dela; caso contrário use a família de texto ou a fonte disponível mais parecida.
 

@@ -61,11 +61,10 @@ textarea{min-height:84px;resize:vertical}
 .stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start;margin-top:22px}
 .tv{background:var(--bezel);border-radius:18px;padding:14px 14px 22px;box-shadow:0 30px 60px -35px rgba(20,24,32,.6)}
 .screen{position:relative;aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden}
-.screen .side{position:absolute;left:0;top:0;width:20%;height:80%;background:#3A3E46;display:flex;align-items:center;justify-content:center;color:#8B919C;font-size:12px;text-align:center;padding:8px}
-.screen .side img{width:100%;height:100%;object-fit:cover}
 .screen video{position:absolute;right:0;top:0;width:80%;height:80%;object-fit:cover;background:#111}
 .screen .full{width:100%;height:100%}
-.screen .bar{position:absolute;left:0;bottom:0;width:100%;height:20%;object-fit:cover;background:#2F333A}
+.screen .L{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.screen .janela{position:absolute;right:0;top:0;width:80%;height:80%;background:#23262C;display:flex;align-items:center;justify-content:center;color:#7D838E;font-size:13px}
 .tvfoot{height:8px;width:24%;margin:12px auto 0;border-radius:6px;background:#3B3F47}
 .display{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
 .display img{width:100%;border-radius:4px;box-shadow:0 12px 28px -18px rgba(0,0,0,.5)}
@@ -143,7 +142,7 @@ textarea{min-height:84px;resize:vertical}
 <body>
 <div class="app">
   <aside>
-    <div class="brand"><h1>Estúdio de Campanhas</h1><p>IcomTV · barra, vídeo e display a partir de uma referência</p></div>
+    <div class="brand"><h1>Estúdio de Campanhas</h1><p>IcomTV · L, vídeo e display a partir de uma referência</p></div>
     <button class="new" id="btnNew">Nova campanha</button>
     <div class="list" id="list"></div>
   </aside>
@@ -158,7 +157,7 @@ textarea{min-height:84px;resize:vertical}
       <label class="modo">
         <input type="radio" name="modo" value="criar" checked>
         <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-        <span><b>Criar as peças que faltam</b><small>Envie uma peça da campanha. O agente cria as outras (barra, vídeo, display) com a mesma identidade.</small></span>
+        <span><b>Criar as peças que faltam</b><small>Envie uma peça da campanha. O agente cria as outras (L, vídeo, display) com a mesma identidade.</small></span>
       </label>
       <label class="modo">
         <input type="radio" name="modo" value="adaptar">
@@ -228,11 +227,11 @@ textarea{min-height:84px;resize:vertical}
       <label>O que gerar</label>
       <div class="pecas">
         <label><input type="radio" name="auto" checked> <span data-criar>Automático (as peças que faltam)</span><span data-adaptar hidden>As mesmas peças do material</span></label>
-        <label><input type="checkbox" name="p" value="barra"> Barra em L</label>
+        <label><input type="checkbox" name="p" value="barra"> L (lateral + barra)</label>
         <label><input type="checkbox" name="p" value="video"> Vídeo 40 s</label>
         <label><input type="checkbox" name="p" value="display"> Display A5</label>
       </div>
-      <p class="hint">Barra e display saem em <b>SVG</b> e <b>PDF com texto editável</b>, mais PNG e as fontes usadas. O vídeo sai em MP4.</p>
+      <p class="hint">O L e o display saem em <b>SVG</b> e <b>PDF com texto editável</b>, mais PNG e as fontes usadas. O vídeo sai em MP4.</p>
       <label class="check" data-criar><input type="checkbox" name="usar_audio"> Usar a trilha do vídeo de referência no vídeo novo</label>
       <div style="margin-top:16px"><label for="obs">Observações para o agente <span class="opt">opcional</span></label><textarea id="obs" name="observacoes" placeholder="Ex.: troque a data para 15/11 e use a foto do casal na abertura."></textarea></div>
       <div class="row"><button class="btn" type="submit" id="send">Gerar peças</button><span id="formErr" class="err" role="alert"></span></div>
@@ -244,7 +243,7 @@ textarea{min-height:84px;resize:vertical}
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const STATUS = { na_fila: 'Na fila', processando: 'Em produção', revisao: 'Para revisão', aprovado: 'Aprovado', erro: 'Erro' };
-const PECA = { barra: 'Barra', video: 'Vídeo', display: 'Display' };
+const PECA = { barra: 'L', video: 'Vídeo', display: 'Display' };
 let atual = null, timer = null;
 
 async function api(url, opt) { const r = await fetch(url, opt); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.erro || r.statusText); return j; }
@@ -408,10 +407,6 @@ function telaNova() {
 
 const arq = (j, rel, baixar) => rel ? `/arquivos/${j.id}/${rel.split('/').map(encodeURIComponent).join('/')}${baixar ? '?baixar=1' : ''}` : '';
 
-function referenciaLateral(j) {
-  const img = (j.entradas || []).find((e) => /\.(png|jpe?g|webp)$/i.test(e.nome));
-  return img ? `<img src="${arq(j, img.arquivo.split('/jobs/' + j.id + '/')[1] || '')}" alt="">` : 'Lateral do L<br>(peça da clínica)';
-}
 
 async function abrir(id) {
   atual = id; clearTimeout(timer);
@@ -428,15 +423,15 @@ async function abrir(id) {
   if (j.status === 'erro') h += `<div class="card"><p class="err">${esc(j.erro)}</p><div class="row"><button class="btn sec" id="retry">Tentar de novo</button></div></div>`;
   if (s.video || s.barra || s.display_png) {
     h += `<div class="stage"><div><div class="tv"><div class="screen">`;
-    if (s.video && s.barra) h += `<div class="side">${referenciaLateral(j)}</div><video src="${arq(j, s.video)}" autoplay muted loop playsinline controls></video><img class="bar" src="${arq(j, s.barra)}" alt="Barra em L">`;
+    // o L (1920x1080, janela do vídeo transparente) fica por cima do vídeo, como na TV
+    if (s.barra) h += `${s.video ? `<video src="${arq(j, s.video)}" autoplay muted loop playsinline></video>` : '<div class="janela">área do vídeo</div>'}<img class="L" src="${arq(j, s.barra)}" alt="L: lateral e barra">`;
     else if (s.video) h += `<video class="full" style="width:100%;height:100%" src="${arq(j, s.video)}" autoplay muted loop playsinline controls></video>`;
-    else if (s.barra) h += `<div class="side">${referenciaLateral(j)}</div><div style="position:absolute;right:0;top:0;width:80%;height:80%;background:#23262C;display:flex;align-items:center;justify-content:center;color:#7D838E;font-size:13px">área de vídeo</div><img class="bar" src="${arq(j, s.barra)}" alt="Barra em L">`;
     h += `</div><div class="tvfoot"></div></div>
       <div class="dl">
         ${s.video ? `<a class="main" href="${arq(j, s.video, 1)}">Vídeo MP4</a>` : ''}
-        ${s.barra_svg ? `<a class="main" href="${arq(j, s.barra_svg, 1)}">Barra SVG editável</a>` : ''}
-        ${s.barra_pdf ? `<a class="main" href="${arq(j, s.barra_pdf, 1)}">Barra PDF editável</a>` : ''}
-        ${s.barra ? `<span class="outros">Outros formatos da barra:</span><a href="${arq(j, s.barra, 1)}">PNG 1920×216</a>${s.barra_hd ? `<a href="${arq(j, s.barra_hd, 1)}">PNG HD 3840×432</a>` : ''}` : ''}
+        ${s.barra_svg ? `<a class="main" href="${arq(j, s.barra_svg, 1)}">L SVG editável</a>` : ''}
+        ${s.barra_pdf ? `<a class="main" href="${arq(j, s.barra_pdf, 1)}">L PDF editável</a>` : ''}
+        ${s.barra ? `<span class="outros">Outros formatos do L (PNG com a janela do vídeo transparente):</span><a href="${arq(j, s.barra, 1)}">PNG 1920×1080</a>${s.barra_hd ? `<a href="${arq(j, s.barra_hd, 1)}">PNG HD 3840×2160</a>` : ''}` : ''}
       </div></div>`;
     h += s.display_png ? `<div class="display"><h4>Display A5</h4><img src="${arq(j, s.display_prev || s.display_png)}" alt="Display A5"><div class="dl" style="justify-content:center">${s.display_svg ? `<a class="main" href="${arq(j, s.display_svg, 1)}">Display SVG editável</a>` : ''}<a class="main" href="${arq(j, s.display_pdf, 1)}">PDF editável · impressão</a><span class="outros">Outros formatos:</span><a href="${arq(j, s.display_png, 1)}">PNG 300 dpi</a></div></div>` : '<div></div>';
     h += `</div>`;
